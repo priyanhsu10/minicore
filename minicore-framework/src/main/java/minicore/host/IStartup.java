@@ -1,6 +1,8 @@
 package minicore.host;
 
+import minicore.ioc.IServiceCollection;
+
 public interface IStartup {
-public  void  configureServices(IHostBuilder hostBuilder);
-public  void configure(IHostBuilder hostBuilder);
+  void  configureServices(IServiceCollection services);
+   void configure(IHostBuilder hostBuilder);
 }

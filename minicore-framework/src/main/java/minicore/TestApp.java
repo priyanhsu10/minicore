@@ -3,6 +3,7 @@ package minicore;
 import minicore.host.IHostBuilder;
 import minicore.host.IStartup;
 import minicore.host.WebHostBuilder;
+import minicore.ioc.IServiceCollection;
 
 public class TestApp {
     public static void main(String[] args) {
@@ -12,12 +13,12 @@ public class TestApp {
 class  AppStartup implements IStartup{
 
     @Override
-    public void configureServices(IHostBuilder hostBuilder) {
+    public void configureServices(IServiceCollection app) {
 
     }
 
     @Override
-    public void configure(IHostBuilder hostBuilder) {
+    public void configure(IHostBuilder app) {
 
     }
 }
