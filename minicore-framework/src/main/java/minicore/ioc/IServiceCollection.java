@@ -1,5 +1,7 @@
 package minicore.ioc;
 
+import minicore.ioc.container.Scope;
+
 public interface IServiceCollection {
     <T> T resolve(Class<T> source);
     <TSource>  void addTransient(Class<TSource> source, Class<? extends TSource> target);

@@ -15,7 +15,6 @@ public class JettyServer implements  IServer{
         ServletHandler servletHandler= new ServletHandler();
         servletHandler.addFilterWithMapping(AppFilter.class, "/*",
                 EnumSet.of(DispatcherType.REQUEST));
-        servletHandler.addServletWithMapping(BlockingServlet.class,"/status");
         server.setHandler(servletHandler);
         ServerConnector connector = new ServerConnector(server);
         connector.setPort(8090);

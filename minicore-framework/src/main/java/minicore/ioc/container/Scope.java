@@ -1,4 +1,4 @@
-package minicore.ioc;
+package minicore.ioc.container;
 
 public enum Scope {
     Transient,
