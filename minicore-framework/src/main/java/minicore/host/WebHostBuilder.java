@@ -5,11 +5,9 @@ import minicore.contracts.IAction;
 import minicore.endpoints.EndPointManger;
 import minicore.ioc.IServiceCollection;
 import minicore.ioc.ServiceCollection;
-import minicore.mildlewares.exceptions.ExeptionHandlerMiddleware;
-import minicore.mildlewares.routemap.UseRouteingMiddleware;
 import minicore.pipeline.PipelineBuilder;
 
-public class WebHostBuilder implements IHostBuilder{
+    public class WebHostBuilder implements IHostBuilder{
     private static IAction action;
     private static EndPointManger endPointManger;
     private static IServiceCollection serviceCollection;
@@ -63,12 +61,18 @@ public class WebHostBuilder implements IHostBuilder{
 
         return this;
     }
-    public void useStartup(Class<? extends IStartup> startupClass, IServiceCollection iServiceCollection) throws Exception {
+
+        @Override
+        public IServiceCollection services() {
+            return  serviceCollection;
+        }
+
+        public void useStartup(Class<? extends IStartup> startupClass, IServiceCollection iServiceCollection) throws Exception {
         IStartup startup = (IStartup) startupClass.getDeclaredConstructor().newInstance();
         startup.configureServices(iServiceCollection);
 
         addInitialFilters();
-        startup.configure(this);
+        startup.configure(pipelineBuilder);
 
     }
 
@@ -82,9 +86,6 @@ public class WebHostBuilder implements IHostBuilder{
 
     }
     private void addInitialFilters() {
-        //exception middleware
-        pipelineBuilder.use(ExeptionHandlerMiddleware.class);
-        //endpoint routing middleware
-        pipelineBuilder.use(UseRouteingMiddleware.class);
+       //add initial configuration middleware
     }
 }

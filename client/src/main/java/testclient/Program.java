@@ -1,6 +1,5 @@
-package minicore.testclient;
+package testclient;
 
-import minicore.contracts.HttpContext;
 import minicore.host.WebHostBuilder;
 
 public class Program {

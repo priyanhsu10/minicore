@@ -7,10 +7,10 @@ import minicore.json.JsonHelper;
 
 import java.io.IOException;
 
-public class ExeptionHandlerMiddleware implements IMiddleware {
+public class ExceptionMiddleware implements IMiddleware {
     private IAction _action;
 
-    public ExeptionHandlerMiddleware(IAction action){
+    public ExceptionMiddleware(IAction action){
 
         _action = action;
     }

@@ -1,4 +1,4 @@
-package minicore.testclient.controllers;
+package testclient.controllers;
 
 
 import minicore.contracts.ControllerBase;

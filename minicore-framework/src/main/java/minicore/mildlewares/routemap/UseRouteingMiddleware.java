@@ -35,8 +35,10 @@ public class UseRouteingMiddleware implements IMiddleware {
 
     private void setRoutingData(HttpContext actionContext) throws IOException {
         PrintWriter p = actionContext.getResponse().getWriter();
-        String routPath = actionContext.getRequest().getRequestURI()
-                .substring(actionContext.getRequest().getContextPath().length()+1);
+        String routPath = actionContext.getRequest().getRequestURI();
+        if(routPath.startsWith("/")){
+            routPath=routPath.substring(1);
+        }
         actionContext.setRoute(routPath);
         EndPoint e = WebHostBuilder.getEndPointManger().getEndPoint(routPath, actionContext.getRequest().getMethod());
         actionContext.setEndpoint(e);
