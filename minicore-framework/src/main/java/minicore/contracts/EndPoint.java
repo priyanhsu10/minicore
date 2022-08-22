@@ -15,6 +15,7 @@ public class EndPoint {
     public String Pattern;
     public boolean isPattern = false;
 
+
     public Class getReturnType() {
         return ActionMethod.getReturnType();
     }

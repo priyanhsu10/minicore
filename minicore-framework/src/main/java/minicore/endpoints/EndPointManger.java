@@ -2,9 +2,9 @@ package minicore.endpoints;
 
 import minicore.contracts.ControllerBase;
 import minicore.contracts.EndPoint;
-import minicore.endpoints.annotations.*;
-import minicore.host.IStartup;
-import minicore.ioc.IServiceCollection;
+import minicore.contracts.annotations.http.*;
+import minicore.contracts.host.IStartup;
+import minicore.contracts.ioc.IServiceCollection;
 import minicore.ioc.container.Scope;
 
 import org.reflections.Reflections;
@@ -65,68 +65,78 @@ public class EndPointManger {
             }
 
             EndPoint endPoint = new EndPoint(m, controller);
-            if (m.isAnnotationPresent(Get.class)) {
-                endPoint.HttpMethod = "GET";
-                endPoint.DisplayName = m.getAnnotation(Get.class).path();
-
-
-            } else if (m.isAnnotationPresent(Post.class)) {
-                endPoint.HttpMethod = "POST";
-                endPoint.DisplayName = m.getAnnotation(Post.class).path();
-
-
-            } else if (m.isAnnotationPresent(Put.class)) {
-                endPoint.HttpMethod = "PUT";
-                endPoint.DisplayName = m.getAnnotation(Put.class).path();
-
-            } else if (m.isAnnotationPresent(Delete.class)) {
-                endPoint.HttpMethod = "DELETE";
-                endPoint.DisplayName = m.getAnnotation(Delete.class).path();
-
-
-            }
+            setHttpMethod(m, endPoint);
 
             endPoint.DisplayName = BaseControllerPath + endPoint.DisplayName;
 
 
-            if (endPoint.DisplayName == null ) {
+            if (endPoint.DisplayName == null) {
                 continue;
             }
-            if(endPoint.DisplayName.startsWith("/")){
-                endPoint.DisplayName= endPoint.DisplayName.substring(1);
+            if (endPoint.DisplayName.startsWith("/")) {
+                endPoint.DisplayName = endPoint.DisplayName.substring(1);
             }
             endPoint.UrlTokens = endPoint.DisplayName.split("/");
-            if (endPoint.DisplayName.contains(":")) {
-                //contain the pattern
-                //example account/:name/test/:id
-                endPoint.isPattern = true;
-                Arrays.stream(endPoint.UrlTokens).filter(x -> x.contains(":")).forEach(x -> {
-                    String paramName = x.substring(1);
-                    Parameter[] parameters =m.getParameters();
 
-                    Class<?>[] types= m.getParameterTypes();
-                    for(int i=0;i<m.getParameterCount();i++){
-                      if(   parameters[i].getName().equalsIgnoreCase(paramName)){
-                          endPoint.ParameterNameTypes.put(paramName, types[i]);
-                          break;
-                      }
-                    }
-
-
-                });
-
-
-            }
+            patternMatch(m, endPoint);
 
 
             endPoints.add(endPoint);
 
+
         }
+    }
+
+    private void setHttpMethod(Method m, EndPoint endPoint) {
+        if (m.isAnnotationPresent(Get.class)) {
+            endPoint.HttpMethod = "GET";
+            endPoint.DisplayName = m.getAnnotation(Get.class).path();
+
+
+        } else if (m.isAnnotationPresent(Post.class)) {
+            endPoint.HttpMethod = "POST";
+            endPoint.DisplayName = m.getAnnotation(Post.class).path();
+
+
+        } else if (m.isAnnotationPresent(Put.class)) {
+            endPoint.HttpMethod = "PUT";
+            endPoint.DisplayName = m.getAnnotation(Put.class).path();
+
+        } else if (m.isAnnotationPresent(Delete.class)) {
+            endPoint.HttpMethod = "DELETE";
+            endPoint.DisplayName = m.getAnnotation(Delete.class).path();
+
+
+        }
+    }
+
+    private void patternMatch(Method m, EndPoint endPoint) {
+        if (!endPoint.DisplayName.contains(":")) {
+            return;
+        }
+        //contain the pattern
+        //example account/:name/test/:id
+        endPoint.isPattern = true;
+        Arrays.stream(endPoint.UrlTokens).filter(x -> x.contains(":")).forEach(x -> {
+            String paramName = x.substring(1);
+            Parameter[] parameters = m.getParameters();
+
+            Class<?>[] types = m.getParameterTypes();
+            for (int i = 0; i < m.getParameterCount(); i++) {
+                if (parameters[i].getName().equalsIgnoreCase(paramName)) {
+                    endPoint.ParameterNameTypes.put(paramName, types[i]);
+                    break;
+                }
+            }
+
+
+        });
+
     }
 
     public EndPoint getEndPoint(String routPath, String method) {
         String[] segments = routPath.split("/");
-        if(segments[0].length()==0){
+        if (segments[0].length() == 0) {
 
             //base url  localhot:8090/
             throw new RuntimeException("no url match");
@@ -141,15 +151,15 @@ public class EndPointManger {
 
         }
 
-      EndPoint selected=  candidates.stream().filter(x->isEndpointMatch(x,routPath)).findFirst().orElseThrow(()->
+        EndPoint selected = candidates.stream().filter(x -> isEndpointMatch(x, routPath)).findFirst().orElseThrow(() ->
                 new RuntimeException("No route path Match"));
 
 
-        return  selected;
-
+        return selected;
 
 
     }
+
     //this logic will be  use in route data calculation
     private boolean isEndpointMatch(EndPoint endPoint, String routPath) {
         String[] segments = routPath.split("/");
@@ -182,16 +192,16 @@ public class EndPointManger {
     }
 
     private Object getObject(String value, Class<?> parameterType) {
-        if(parameterType.isAssignableFrom(String.class)){
+        if (parameterType.isAssignableFrom(String.class)) {
             return value;
         }
-        if(parameterType.isAssignableFrom(Integer.class) || parameterType.isAssignableFrom(int.class)){
+        if (parameterType.isAssignableFrom(Integer.class) || parameterType.isAssignableFrom(int.class)) {
             return Integer.parseInt(value);
         }
-        if(parameterType.isAssignableFrom(Double.class)|| parameterType.isAssignableFrom(double.class)){
+        if (parameterType.isAssignableFrom(Double.class) || parameterType.isAssignableFrom(double.class)) {
             return Double.parseDouble(value);
         }
-        if(parameterType.isAssignableFrom(Boolean.class)|| parameterType.isAssignableFrom(boolean.class)){
+        if (parameterType.isAssignableFrom(Boolean.class) || parameterType.isAssignableFrom(boolean.class)) {
             return Boolean.parseBoolean(value);
         }
         return parameterType.cast(value);

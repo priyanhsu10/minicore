@@ -1,12 +1,14 @@
 package minicore.host;
 
 import java.util.EnumSet;
+
+import minicore.contracts.host.IServer;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
 import javax.servlet.DispatcherType;
-public class JettyServer implements  IServer{
+public class JettyServer implements IServer {
     private Server server;
 
     public void start() {

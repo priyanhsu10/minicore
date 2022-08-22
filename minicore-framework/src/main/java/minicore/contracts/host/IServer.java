@@ -1,4 +1,4 @@
-package minicore.host;
+package minicore.contracts.host;
 
 public interface IServer {
     void start();

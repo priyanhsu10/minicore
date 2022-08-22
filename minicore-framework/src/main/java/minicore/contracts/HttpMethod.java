@@ -1,4 +1,4 @@
-package minicore.endpoints;
+package minicore.contracts;
 
 public enum HttpMethod {
     GET,

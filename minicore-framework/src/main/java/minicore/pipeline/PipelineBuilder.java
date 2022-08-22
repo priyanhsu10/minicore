@@ -1,53 +1,56 @@
 package minicore.pipeline;
 
-import minicore.contracts.HttpContext;
+import com.sun.tools.javac.code.Attribute;
 import minicore.contracts.IAction;
 import minicore.contracts.IMiddleware;
+import minicore.contracts.pipeline.IApplicationBuilder;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-public class PipelineBuilder {
+public class PipelineBuilder implements IApplicationBuilder {
     private IAction initialAction;
-    private  IAction finalAction;
     public List<Class<? extends IMiddleware>> middlewareTypes = new ArrayList<>();
-
+    private Map<String,IAction> actionMapList= new HashMap<>();
     public PipelineBuilder(IAction action) {
         this.initialAction = action;
 
     }
 
-    public PipelineBuilder use(Class<? extends IMiddleware> middlewareType) {
+    @Override
+    public IApplicationBuilder use(Class<? extends IMiddleware> middlewareType) {
         middlewareTypes.add(middlewareType);
-        return  this;
+        return this;
     }
+    @Override
+    public IApplicationBuilder map(String url,IAction action) {
+        actionMapList.put(url,action);
+        return this;
+    }
+
 
     private IAction createPipeline(int index) {
         if (index < (middlewareTypes.size() - 1)) {
             //create handler and pass context
             IAction actionHandler = createPipeline(index + 1);
 
-            return build(index,actionHandler);
+            return build(index, actionHandler);
         } else {
-            return build(index,null);
+            return build(index, null);
         }
 
     }
-public  void execute(HttpContext c) throws Exception {
-        if(finalAction==null){
-            finalAction=build();
-        }
-    finalAction.next(c);
-}
-    public  IAction build() {
-      return   createPipeline(0);
+
+    @Override
+    public IAction build() {
+        return createPipeline(0);
     }
-    private  IAction build(int index ,IAction action){
-        if(action==null){
-              action=initialAction;
+
+    private IAction build(int index, IAction action) {
+        if (action == null) {
+            action = initialAction;
         }
-        IMiddleware middleware= null;
+        IMiddleware middleware = null;
         try {
             middleware = middlewareTypes.get(index).getConstructor(IAction.class).newInstance(action);
         } catch (InstantiationException e) {
@@ -59,7 +62,7 @@ public  void execute(HttpContext c) throws Exception {
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
-        return  middleware::invoke;
+        return middleware::invoke;
 
     }
 }

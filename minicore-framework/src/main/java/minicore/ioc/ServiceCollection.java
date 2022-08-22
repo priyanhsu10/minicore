@@ -1,5 +1,6 @@
 package minicore.ioc;
 
+import minicore.contracts.ioc.IServiceCollection;
 import minicore.ioc.container.AppContainer;
 import minicore.ioc.container.Descriptor;
 import minicore.ioc.container.Scope;
@@ -27,7 +28,7 @@ public class ServiceCollection implements IServiceCollection {
     }
 
     @Override
-    public <TSource> void AddScope(Class<TSource> source, Class<? extends TSource> target) {
+    public <TSource> void addScope(Class<TSource> source, Class<? extends TSource> target) {
         container.addScope(source, target);
     }
 

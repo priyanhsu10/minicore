@@ -2,12 +2,15 @@ package minicore.host;
 
 import minicore.contracts.HttpContext;
 import minicore.contracts.IAction;
+import minicore.contracts.host.IHostBuilder;
+import minicore.contracts.host.IServer;
+import minicore.contracts.host.IStartup;
 import minicore.endpoints.EndPointManger;
-import minicore.ioc.IServiceCollection;
+import minicore.contracts.ioc.IServiceCollection;
 import minicore.ioc.ServiceCollection;
 import minicore.pipeline.PipelineBuilder;
 
-    public class WebHostBuilder implements IHostBuilder{
+    public class WebHostBuilder implements IHostBuilder {
     private static IAction action;
     private static EndPointManger endPointManger;
     private static IServiceCollection serviceCollection;

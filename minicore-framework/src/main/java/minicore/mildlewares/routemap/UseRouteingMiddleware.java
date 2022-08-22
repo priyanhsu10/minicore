@@ -3,6 +3,7 @@ package minicore.mildlewares.routemap;
 
 
 import minicore.contracts.*;
+import minicore.contracts.IMiddleware;
 import minicore.host.WebHostBuilder;
 
 import java.io.IOException;
