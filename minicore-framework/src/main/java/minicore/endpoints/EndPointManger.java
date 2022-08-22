@@ -126,6 +126,11 @@ public class EndPointManger {
 
     public EndPoint getEndPoint(String routPath, String method) {
         String[] segments = routPath.split("/");
+        if(segments[0].length()==0){
+
+            //base url  localhot:8090/
+            throw new RuntimeException("no url match");
+        }
         List<EndPoint> candidates = endPoints.stream()
                 .filter(x -> x.DisplayName.startsWith(segments[0]))
                 .filter(y -> y.HttpMethod.equals(method))
