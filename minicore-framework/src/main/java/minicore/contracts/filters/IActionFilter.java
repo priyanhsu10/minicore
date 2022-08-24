@@ -1,9 +1,11 @@
 package minicore.contracts.filters;
 
+import minicore.contracts.HttpContext;
+
 public interface IActionFilter {
+//todo:action specific context should pass .
+    void beforeExecute(HttpContext httpContext);
 
-    void beforeExecute();
-
-    void afterExecute();
+    void afterExecute(HttpContext httpContext);
 }
 

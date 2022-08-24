@@ -1,2 +1,6 @@
-package minicore.contracts.modelbinding;public interface IModelBinder {
+package minicore.contracts.modelbinding;
+
+public interface IModelBinder {
+
+    void bindModel();
 }

@@ -1,8 +1,10 @@
 package minicore.host;
 
 import minicore.contracts.HttpContext;
+import minicore.contracts.IAction;
 
 import javax.servlet.*;
+import javax.swing.*;
 import java.io.IOException;
 
 public class AppFilter implements Filter {
@@ -20,12 +22,15 @@ public class AppFilter implements Filter {
         //trigger framework
         HttpContext actionContext = new HttpContext(servletRequest, servletResponse);
         try {
-            WebHostBuilder.getAction() .next(actionContext);
+            WebHostBuilder.getAction().next(AppFilter::initialAction,actionContext);
         } catch (Exception e) {
             throw  new RuntimeException(e);
         }
     }
 
+    private static void initialAction( HttpContext httpContext) {
+        System.out.println("inital middleware");
+    }
     @Override
     public void destroy() {
 

@@ -1,5 +1,5 @@
 package minicore.contracts;
-@FunctionalInterface
 public interface IAction {
-  void next(HttpContext httpContext) throws Exception;
+   void next(IActionDelegate next, HttpContext httpContext) throws Exception ;
+
 }

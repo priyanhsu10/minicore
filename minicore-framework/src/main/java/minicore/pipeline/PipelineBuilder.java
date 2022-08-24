@@ -1,30 +1,36 @@
 package minicore.pipeline;
 
-import com.sun.tools.javac.code.Attribute;
+import minicore.contracts.HttpContext;
 import minicore.contracts.IAction;
+import minicore.contracts.IActionDelegate;
 import minicore.contracts.IMiddleware;
+import minicore.contracts.ioc.IServiceCollection;
 import minicore.contracts.pipeline.IApplicationBuilder;
+import minicore.ioc.container.Scope;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class PipelineBuilder implements IApplicationBuilder {
-    private IAction initialAction;
+    private IActionDelegate initialAction;
     public List<Class<? extends IMiddleware>> middlewareTypes = new ArrayList<>();
-    private Map<String,IAction> actionMapList= new HashMap<>();
-    public PipelineBuilder(IAction action) {
-        this.initialAction = action;
+    private Map<String, IAction> actionMapList = new HashMap<>();
+    private IServiceCollection serviceCollection;
 
+    public PipelineBuilder(IActionDelegate initial, IServiceCollection serviceCollection) {
+        this.initialAction = initial;
+        this.serviceCollection = serviceCollection;
     }
 
     @Override
     public IApplicationBuilder use(Class<? extends IMiddleware> middlewareType) {
         middlewareTypes.add(middlewareType);
+        serviceCollection.register(middlewareType, Scope.Singleton);
         return this;
     }
+
     @Override
-    public IApplicationBuilder map(String url,IAction action) {
-        actionMapList.put(url,action);
+    public IApplicationBuilder map(String url, IAction action) {
+        actionMapList.put(url, action);
         return this;
     }
 
@@ -48,21 +54,21 @@ public class PipelineBuilder implements IApplicationBuilder {
 
     private IAction build(int index, IAction action) {
         if (action == null) {
-            action = initialAction;
+            IMiddleware initial = new InitalMidleware();
+            return initial::next;
         }
-        IMiddleware middleware = null;
-        try {
-            middleware = middlewareTypes.get(index).getConstructor(IAction.class).newInstance(action);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-        return middleware::invoke;
+        IMiddleware middleware = middleware = serviceCollection.resolve(middlewareTypes.get(index));
+        return middleware::next;
 
+    }
+}
+
+class InitalMidleware implements IMiddleware {
+    public InitalMidleware() {
+    }
+
+    @Override
+    public void next(IActionDelegate action, HttpContext httpContext) throws Exception {
+        action.invoke(httpContext);
     }
 }

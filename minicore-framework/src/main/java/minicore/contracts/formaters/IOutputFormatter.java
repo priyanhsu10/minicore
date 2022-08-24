@@ -1,2 +1,4 @@
-package minicore.contracts.formaters;public interface IOutputFormatter {
+package minicore.contracts.formaters;
+
+public interface IOutputFormatter {
 }
