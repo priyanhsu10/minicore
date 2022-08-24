@@ -3,8 +3,6 @@ package minicore;
 import minicore.contracts.host.IStartup;
 import minicore.contracts.ioc.IServiceCollection;
 import minicore.contracts.pipeline.IApplicationBuilder;
-import minicore.mildlewares.exceptions.ExceptionMiddleware;
-import minicore.pipeline.PipelineBuilder;
 
 public class Application {
     public static void main(String[] args) {

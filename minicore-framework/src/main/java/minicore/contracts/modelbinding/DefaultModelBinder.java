@@ -1,4 +1,4 @@
-package minicore.mildlewares.modelbinding;
+package minicore.contracts.modelbinding;
 
 
 import minicore.contracts.EndPoint;
@@ -10,11 +10,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ModelBindingResult {
+public class DefaultModelBinder {
     private final Map<String, Object> queryParameters = new HashMap<>();
     private String bodyData;
-   private Map<String, Object> routeData = new HashMap<>();
-    private final   Map<String, String> header = new HashMap<>();
+    private Map<String, Object> routeData = new HashMap<>();
+    private final Map<String, String> header = new HashMap<>();
 
     public Map<String, Object> getQueryParameters() {
         return queryParameters;
@@ -32,7 +32,7 @@ public class ModelBindingResult {
         return header;
     }
 
-    public ModelBindingResult(HttpContext actionContext) {
+    public DefaultModelBinder(HttpContext actionContext) {
 
         processBinding(actionContext);
     }
@@ -44,18 +44,9 @@ public class ModelBindingResult {
 //        if(method.equals("GET") || method.equals("DELETE") ){
         //no need to read the body form request
         String query = actionContext.getRequest().getQueryString();
-        if (query != null && !query.isEmpty()) {
-
-            Arrays.stream(query.split("&")).forEach(x -> {
-                if (x.contains("=")) {
-                    String[] keyValue = x.split("=");
-                    queryParameters.put(keyValue[0], keyValue[1]);
-                }
-
-            });
-        }
+        queryStringBinder(query);
         if (actionContext.getEndpoint().isPattern) {
-            routeData = getRouteData(actionContext.getEndpoint(),
+            routeData = routeDataBinder(actionContext.getEndpoint(),
                     actionContext.getRoute());
         }
         if (method.equals("PUT") || method.equals("POST")) {
@@ -73,7 +64,22 @@ public class ModelBindingResult {
 
     }
 
-    private Map<String, Object> getRouteData(EndPoint endPoint, String routePath) {
+    public Map<String, Object> queryStringBinder(String query) {
+        Map<String, Object> queryMap = new HashMap<>();
+        if (query != null && !query.isEmpty()) {
+
+            Arrays.stream(query.split("&")).forEach(x -> {
+                if (x.contains("=")) {
+                    String[] keyValue = x.split("=");
+                    queryMap.put(keyValue[0], keyValue[1]);
+                }
+
+            });
+        }
+        return queryMap;
+    }
+
+    public Map<String, Object> routeDataBinder(EndPoint endPoint, String routePath) {
 
         Map<String, Object> routData = new HashMap<>();
         String[] segments = routePath.split("/");
@@ -83,23 +89,24 @@ public class ModelBindingResult {
                 String value = segments[i];
                 String parameterName = tokens[i].substring(1);
                 Class<?> parameterType = endPoint.ParameterNameTypes.get(parameterName);
-                routData.put(parameterName,getObject( value,parameterType));
+                routData.put(parameterName, getObject(value, parameterType));
             }
         }
         return routData;
 
     }
+
     private Object getObject(String value, Class<?> parameterType) {
-        if(parameterType.isAssignableFrom(String.class)){
+        if (parameterType.isAssignableFrom(String.class)) {
             return value;
         }
-        if(parameterType.isAssignableFrom(Integer.class) || parameterType.isAssignableFrom(int.class)){
+        if (parameterType.isAssignableFrom(Integer.class) || parameterType.isAssignableFrom(int.class)) {
             return Integer.parseInt(value);
         }
-        if(parameterType.isAssignableFrom(Double.class)|| parameterType.isAssignableFrom(double.class)){
+        if (parameterType.isAssignableFrom(Double.class) || parameterType.isAssignableFrom(double.class)) {
             return Double.parseDouble(value);
         }
-        if(parameterType.isAssignableFrom(Boolean.class)|| parameterType.isAssignableFrom(boolean.class)){
+        if (parameterType.isAssignableFrom(Boolean.class) || parameterType.isAssignableFrom(boolean.class)) {
             return Boolean.parseBoolean(value);
         }
         return parameterType.cast(value);

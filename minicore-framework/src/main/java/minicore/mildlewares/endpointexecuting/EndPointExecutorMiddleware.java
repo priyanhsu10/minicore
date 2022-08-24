@@ -4,9 +4,9 @@ package minicore.mildlewares.endpointexecuting;
 import minicore.contracts.HttpContext;
 import minicore.contracts.IAction;
 import minicore.contracts.IMiddleware;
+import minicore.contracts.modelbinding.DefaultModelBinder;
 import minicore.host.WebHostBuilder;
 import minicore.json.JsonHelper;
-import minicore.mildlewares.modelbinding.ModelBindingResult;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -94,7 +94,7 @@ public class EndPointExecutorMiddleware implements IMiddleware {
         }
         List<Object> params = new ArrayList<>(m.getParameterCount());
         Class<?>[] types = m.getParameterTypes();
-        ModelBindingResult bindingResult = new ModelBindingResult(actionContext);
+        DefaultModelBinder bindingResult = new DefaultModelBinder(actionContext);
 
         Parameter[] parameters = m.getParameters();
 
