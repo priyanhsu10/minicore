@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class DefaultModelCollector implements IModelValueCollector {
+public class DefaultModelValueCollector implements IModelValueCollector {
     private Map<String, Object> queryParameters = new HashMap<>();
     private String bodyData;
     private String requestedMimeType;
@@ -41,11 +41,11 @@ public class DefaultModelCollector implements IModelValueCollector {
         this.httpContext = httpContext;
     }
 
-    public DefaultModelCollector() {
+    public DefaultModelValueCollector() {
 
     }
 
-    public DefaultModelCollector(HttpContext context) {
+    public DefaultModelValueCollector(HttpContext context) {
         this.httpContext = context;
         collectDataFromRequest();
     }
