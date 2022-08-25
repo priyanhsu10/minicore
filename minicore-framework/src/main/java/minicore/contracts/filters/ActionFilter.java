@@ -1,5 +1,6 @@
 package minicore.contracts.filters;
 
+import minicore.contracts.HttpContext;
 import minicore.contracts.IAction;
 
 import java.lang.annotation.ElementType;
@@ -23,12 +24,12 @@ class test{
 class  MyActionFilter implements IActionFilter{
 
      @Override
-     public void beforeExecute() {
+     public void beforeExecute(HttpContext  httpContext) {
           System.out.println("before execute ");
      }
 
      @Override
-     public void afterExecute() {
+     public void afterExecute(HttpContext  httpContext) {
           System.out.println("after execute ");
 
      }

@@ -2,6 +2,7 @@ package minicore.host;
 
 import minicore.contracts.HttpContext;
 import minicore.contracts.IAction;
+import minicore.contracts.IActionDelegate;
 import minicore.contracts.host.IHostBuilder;
 import minicore.contracts.host.IServer;
 import minicore.contracts.host.IStartup;
@@ -38,7 +39,7 @@ import minicore.pipeline.PipelineBuilder;
 
 
 
-    @Override
+        @Override
     public void run() {
         //todo: make this configurable
          IServer server= new JettyServer();
@@ -52,7 +53,7 @@ import minicore.pipeline.PipelineBuilder;
             Class startupClass = Class.forName(startup.getTypeName());
             serviceCollection=new ServiceCollection();
             endPointManger = new EndPointManger(startupClass,serviceCollection);
-            pipelineBuilder = new PipelineBuilder(WebHostBuilder::initialAction);
+            pipelineBuilder = new PipelineBuilder(WebHostBuilder::initialAction,serviceCollection);
             useStartup(startupClass,serviceCollection);
             action = pipelineBuilder.build();
         } catch (ClassNotFoundException e) {
@@ -80,7 +81,9 @@ import minicore.pipeline.PipelineBuilder;
     }
 
     private static void initialAction(HttpContext httpContext) {
-        System.out.println("first middleware");
+        System.out.println("before first middleware");
+
+        System.out.println("after first middleware");
     }
 
     public  static WebHostBuilder build(String[] args){

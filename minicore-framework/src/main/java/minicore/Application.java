@@ -19,11 +19,7 @@ public class Application {
 
         @Override
         public void configure(IApplicationBuilder app) {
-            app.map("/test",httpContext -> {
-               httpContext.getResponse()
-                       .getWriter()
-                       .println("this is from action");
-            });
+
 
         }
     }

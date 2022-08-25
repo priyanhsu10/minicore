@@ -10,21 +10,18 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public class UseRouteingMiddleware implements IMiddleware {
-    private IAction _action;
+//inject dependency
+    public UseRouteingMiddleware() {
 
-    public UseRouteingMiddleware(IAction action) {
-
-
-        _action = action;
     }
 
     @Override
-    public void invoke(HttpContext actionContext) throws Exception {
+    public void next(IActionDelegate action, HttpContext actionContext) throws Exception {
 
 
         try {
             setRoutingData(actionContext);
-            _action.next(actionContext);
+            action.invoke(actionContext);
 
         } catch (IOException e) {
             e.printStackTrace();

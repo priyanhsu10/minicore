@@ -4,17 +4,21 @@ package minicore.contracts.modelbinding;
 import minicore.contracts.EndPoint;
 import minicore.contracts.HttpContext;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class DefaultModelBinder {
-    private final Map<String, Object> queryParameters = new HashMap<>();
+public class DefaultModelValueCollector implements IModelValueCollector {
+    private Map<String, Object> queryParameters = new HashMap<>();
     private String bodyData;
+    private String requestedMimeType;
+    private String inputBodyContentType;
     private Map<String, Object> routeData = new HashMap<>();
-    private final Map<String, String> header = new HashMap<>();
+    private Map<String, String> headers = new HashMap<>();
+    private HttpContext httpContext;
 
     public Map<String, Object> getQueryParameters() {
         return queryParameters;
@@ -28,30 +32,40 @@ public class DefaultModelBinder {
         return routeData;
     }
 
-    public Map<String, String> getHeader() {
-        return header;
+    public Map<String, String> getHeaders() {
+        return headers;
     }
 
-    public DefaultModelBinder(HttpContext actionContext) {
-
-        processBinding(actionContext);
+    @Override
+    public void setHttpContext(HttpContext httpContext) {
+        this.httpContext = httpContext;
     }
 
-    private void processBinding(HttpContext actionContext) {
+    public DefaultModelValueCollector() {
+
+    }
+
+    public DefaultModelValueCollector(HttpContext context) {
+        this.httpContext = context;
+        collectDataFromRequest();
+    }
+
+    private void collectDataFromRequest() {
 
 
-        String method = actionContext.getEndpoint().HttpMethod;
+        String method = httpContext.getEndpoint().HttpMethod;
 //        if(method.equals("GET") || method.equals("DELETE") ){
         //no need to read the body form request
-        String query = actionContext.getRequest().getQueryString();
-        queryStringBinder(query);
-        if (actionContext.getEndpoint().isPattern) {
-            routeData = routeDataBinder(actionContext.getEndpoint(),
-                    actionContext.getRoute());
+        this.queryParameters = queryStringBinder(httpContext.getRequest().getQueryString());
+        this.headers = collectHeaderValues(httpContext.getRequest());
+
+        if (httpContext.getEndpoint().isPattern) {
+            routeData = routeDataBinder(httpContext.getEndpoint(),
+                    httpContext.getRoute());
         }
         if (method.equals("PUT") || method.equals("POST")) {
             try {
-                bodyData = actionContext.getRequest()
+                bodyData = httpContext.getRequest()
                         .getReader()
                         .lines()
                         .collect(Collectors.joining());
@@ -60,8 +74,18 @@ public class DefaultModelBinder {
             }
 
         }
+        this.requestedMimeType = this.headers.getOrDefault("accept", "application/json");
+        this.inputBodyContentType = this.headers.getOrDefault("content-type", "application/json");
+    }
 
+    private Map<String, String> collectHeaderValues(HttpServletRequest request) {
 
+        Map<String, String> header = new HashMap<>();
+        while (request.getHeaderNames().hasMoreElements()) {
+            String key = request.getHeaderNames().nextElement();
+            header.put(key, request.getHeader(key));
+        }
+        return header;
     }
 
     public Map<String, Object> queryStringBinder(String query) {
@@ -110,5 +134,13 @@ public class DefaultModelBinder {
             return Boolean.parseBoolean(value);
         }
         return parameterType.cast(value);
+    }
+
+    public String getRequestedMimeType() {
+        return requestedMimeType;
+    }
+
+    public String getInputBodyContentType() {
+        return inputBodyContentType;
     }
 }

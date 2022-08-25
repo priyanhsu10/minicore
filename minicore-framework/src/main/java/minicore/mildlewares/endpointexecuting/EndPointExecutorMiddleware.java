@@ -2,9 +2,9 @@ package minicore.mildlewares.endpointexecuting;
 
 
 import minicore.contracts.HttpContext;
-import minicore.contracts.IAction;
+import minicore.contracts.IActionDelegate;
 import minicore.contracts.IMiddleware;
-import minicore.contracts.modelbinding.DefaultModelBinder;
+import minicore.contracts.modelbinding.DefaultModelValueCollector;
 import minicore.host.WebHostBuilder;
 import minicore.json.JsonHelper;
 
@@ -15,14 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EndPointExecutorMiddleware implements IMiddleware {
-    private IAction _action;
 
-    public EndPointExecutorMiddleware(IAction action) {
-        _action = action;
+    public EndPointExecutorMiddleware() {
     }
 
     @Override
-    public void invoke(HttpContext actionContext) throws Exception{
+    public void next(IActionDelegate action, HttpContext actionContext) throws Exception{
 
 
         //1. controller initialization
@@ -38,6 +36,8 @@ public class EndPointExecutorMiddleware implements IMiddleware {
 
         //action execution
         Object result = actionContext.getEndpoint().ActionMethod.invoke(c, parameter);
+        //result filter execution
+
         actionContext.setActionResult(result);
 
         //5.result processing
@@ -94,11 +94,12 @@ public class EndPointExecutorMiddleware implements IMiddleware {
         }
         List<Object> params = new ArrayList<>(m.getParameterCount());
         Class<?>[] types = m.getParameterTypes();
-        DefaultModelBinder bindingResult = new DefaultModelBinder(actionContext);
+        DefaultModelValueCollector bindingResult = new DefaultModelValueCollector(actionContext);
 
         Parameter[] parameters = m.getParameters();
 
         for (Parameter p : parameters) {
+
             if (bindingResult.getRouteData().containsKey(p.getName())) {
 
                 params.add(bindingResult.getRouteData().get(p.getName()));
@@ -112,6 +113,10 @@ public class EndPointExecutorMiddleware implements IMiddleware {
                     actionContext.getRequest().getMethod().equals("PUT")) {
                 //read the data from body and
                 //currently support of json json bady
+                //validate accept header and check support for
+                // select supported input formatter
+                //if not support then throw exception => not supported
+
                 if (bindingResult.getBodyData() != null && !bindingResult.getBodyData().isEmpty()) {
                     Object data = JsonHelper.deserialize(bindingResult.getBodyData(), p.getType());
                     params.add(data);

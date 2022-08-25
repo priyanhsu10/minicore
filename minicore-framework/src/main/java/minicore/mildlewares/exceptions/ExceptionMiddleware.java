@@ -2,24 +2,23 @@ package minicore.mildlewares.exceptions;
 
 import minicore.contracts.HttpContext;
 import minicore.contracts.IAction;
+import minicore.contracts.IActionDelegate;
 import minicore.contracts.IMiddleware;
 import minicore.json.JsonHelper;
 
 import java.io.IOException;
 
 public class ExceptionMiddleware implements IMiddleware {
-    private IAction _action;
 
-    public ExceptionMiddleware(IAction action){
+    public ExceptionMiddleware(){
 
-        _action = action;
     }
 
     @Override
-    public void invoke(HttpContext actionContext) throws IOException {
+    public void next(IActionDelegate action, HttpContext actionContext) throws IOException {
         try {
 
-            _action.next(actionContext);
+            action.invoke(actionContext);
         } catch (Exception exception) {
             Error e = new Error();
 
