@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class AppContainer {
     public final HashMap<Class, Descriptor> tank = new HashMap<>();
-    public final HashMap<Class,Object> singletonTank =new HashMap<>();
+    public  HashMap<Class, Object> singletonTank = new HashMap<>();
     // this hashMap will be clean at every request end
     public  HashMap<Class,Object> scopeTank=new HashMap<>();
 
@@ -35,7 +35,7 @@ public class AppContainer {
         register(new Descriptor(source, target, Scope.RequestScope));
     }
 
-    public <Source> void register(Descriptor descriptor) {
+    public void register(Descriptor descriptor) {
         validate(descriptor.getImplementer());
         tank.put(descriptor.getSource(), descriptor);
     }
@@ -101,4 +101,17 @@ public class AppContainer {
 
     }
 
+    public void clearSchopeObjects() {
+        scopeTank.clear();
+        scopeTank= new HashMap<>();
+    }
+
+    @Override
+    public void finalize() throws Throwable {
+        scopeTank.clear();
+        scopeTank=null;
+        singletonTank.clear();
+        singletonTank=null;
+
+    }
 }

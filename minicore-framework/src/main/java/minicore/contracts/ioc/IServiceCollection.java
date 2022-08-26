@@ -8,6 +8,6 @@ public interface IServiceCollection {
     <TSource>  void addSingleton(Class<TSource> source, Class<? extends TSource> target);
     <TSource>  void addScope(Class<TSource> source, Class<? extends TSource> target);
     <TSource> void register(Class<TSource> source, Scope scope);
+    <TSource> void addSingleton(Class<TSource> source,IResolveInstance<? extends TSource> resolve);
 
 }
-

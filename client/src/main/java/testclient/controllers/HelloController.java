@@ -2,10 +2,10 @@ package testclient.controllers;
 
 
 import minicore.contracts.ControllerBase;
-import minicore.endpoints.annotations.Delete;
-import minicore.endpoints.annotations.Get;
-import minicore.endpoints.annotations.Post;
-import minicore.endpoints.annotations.Put;
+import minicore.contracts.annotations.http.Delete;
+import minicore.contracts.annotations.http.Get;
+import minicore.contracts.annotations.http.Post;
+import minicore.contracts.annotations.http.Put;
 import testclient.services.ITestService;
 import testclient.services.Model;
 

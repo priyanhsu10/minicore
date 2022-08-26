@@ -4,5 +4,7 @@ import minicore.contracts.HttpContext;
 
 public interface IExceptionFilter {
 
-    void onException(HttpContext context ,Exception e);
+    boolean support(Class<? extends RuntimeException> excetpions);
+
+   <T extends  RuntimeException> void onException(HttpContext context, T e);
 }

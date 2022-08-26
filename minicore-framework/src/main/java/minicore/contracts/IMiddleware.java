@@ -2,5 +2,7 @@ package minicore.contracts;
 
 
 public interface IMiddleware {
-     void next(IActionDelegate action , HttpContext httpContext) throws Exception;
+      void setNext(IActionDelegate action);
+
+     void next(HttpContext httpContext) throws Exception;
 }

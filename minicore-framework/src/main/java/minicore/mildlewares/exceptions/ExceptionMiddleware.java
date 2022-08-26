@@ -9,13 +9,18 @@ import minicore.json.JsonHelper;
 import java.io.IOException;
 
 public class ExceptionMiddleware implements IMiddleware {
-
     public ExceptionMiddleware(){
 
     }
+    private  IActionDelegate action;
 
     @Override
-    public void next(IActionDelegate action, HttpContext actionContext) throws IOException {
+    public void setNext(IActionDelegate action) {
+        this.action=action;
+    }
+
+    @Override
+    public void next( HttpContext actionContext) throws IOException {
         try {
 
             action.invoke(actionContext);

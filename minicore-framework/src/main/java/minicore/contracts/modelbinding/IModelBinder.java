@@ -1,6 +1,8 @@
 package minicore.contracts.modelbinding;
 
+import minicore.contracts.HttpContext;
+
 public interface IModelBinder {
 
-    void bindModel();
+    void bindModel(HttpContext context);
 }
