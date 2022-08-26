@@ -1,5 +1,7 @@
 package minicore.contracts;
 
+import minicore.contracts.ioc.IServiceCollection;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -11,7 +13,9 @@ public class HttpContext {
     private HttpServletRequest request;
     private HttpServletResponse response;
     private EndPoint endpoint;
+
     private Object actionResult;
+    public  static IServiceCollection services;
 
     public String getRoute() {
         return route;

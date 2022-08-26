@@ -2,6 +2,7 @@ package minicore;
 
 import minicore.contracts.host.IStartup;
 import minicore.contracts.ioc.IServiceCollection;
+import minicore.contracts.mvc.MvcConfigurer;
 import minicore.contracts.pipeline.IApplicationBuilder;
 
 public class Application {
@@ -14,7 +15,10 @@ public class Application {
 
         @Override
         public void configureServices(IServiceCollection services) {
+            MvcConfigurer.configureMvc(services, (option)->{
 
+
+           });
         }
 
         @Override

@@ -1,5 +1,6 @@
 package minicore.ioc;
 
+import minicore.contracts.ioc.IResolveInstance;
 import minicore.contracts.ioc.IServiceCollection;
 import minicore.ioc.container.AppContainer;
 import minicore.ioc.container.Descriptor;
@@ -40,5 +41,10 @@ public class ServiceCollection implements IServiceCollection {
     @Override
     public <TSource> void register(Class<TSource> source, Scope scope) {
         container.register(new Descriptor(source,source,scope));
+    }
+
+    @Override
+    public <TSource> void addSingleton(Class<TSource> source, IResolveInstance<? extends TSource> resolve) {
+        container.singletonTank.put(source,  resolve.resolve());
     }
 }

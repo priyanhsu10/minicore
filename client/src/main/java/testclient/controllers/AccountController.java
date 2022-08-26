@@ -2,7 +2,7 @@ package testclient.controllers;
 
 
 import minicore.contracts.ControllerBase;
-import minicore.endpoints.annotations.*;
+import minicore.contracts.annotations.http.*;
 
 @Route(path = "/account")
 public class AccountController extends ControllerBase {

@@ -16,8 +16,8 @@ public class PipelineBuilder implements IApplicationBuilder {
     private Map<String, IAction> actionMapList = new HashMap<>();
     private IServiceCollection serviceCollection;
 
-    public PipelineBuilder(IActionDelegate initial, IServiceCollection serviceCollection) {
-        this.initialAction = initial;
+    public PipelineBuilder(IServiceCollection serviceCollection) {
+
         this.serviceCollection = serviceCollection;
     }
 
@@ -35,10 +35,10 @@ public class PipelineBuilder implements IApplicationBuilder {
     }
 
 
-    private IAction createPipeline(int index) {
+    private IActionDelegate createPipeline(int index) {
         if (index < (middlewareTypes.size() - 1)) {
             //create handler and pass context
-            IAction actionHandler = createPipeline(index + 1);
+            IActionDelegate actionHandler = createPipeline(index + 1);
 
             return build(index, actionHandler);
         } else {
@@ -48,27 +48,34 @@ public class PipelineBuilder implements IApplicationBuilder {
     }
 
     @Override
-    public IAction build() {
+    public IActionDelegate build() {
         return createPipeline(0);
     }
 
-    private IAction build(int index, IAction action) {
+    private IActionDelegate build(int index, IActionDelegate action) {
         if (action == null) {
             IMiddleware initial = new InitalMidleware();
-            return initial::next;
+            initial.setNext(action);
+            return initial::next ;
         }
         IMiddleware middleware = middleware = serviceCollection.resolve(middlewareTypes.get(index));
+        middleware.setNext(action);
         return middleware::next;
 
     }
 }
 
 class InitalMidleware implements IMiddleware {
+    IActionDelegate action;
     public InitalMidleware() {
+    }
+    @Override
+    public void setNext(IActionDelegate action) {
+        this.action=action;
     }
 
     @Override
-    public void next(IActionDelegate action, HttpContext httpContext) throws Exception {
-        action.invoke(httpContext);
+    public void next(HttpContext httpContext) throws Exception {
+
     }
 }
