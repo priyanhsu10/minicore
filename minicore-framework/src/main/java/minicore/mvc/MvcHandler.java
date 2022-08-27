@@ -1,6 +1,7 @@
 package minicore.mvc;
 
 import minicore.contracts.HttpContext;
+import minicore.contracts.annotations.filters.ActionFilter;
 import minicore.contracts.filters.*;
 import minicore.contracts.modelbinding.IModelBinder;
 import minicore.contracts.mvc.IMvcHandler;

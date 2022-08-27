@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class DefaultModelValueCollector implements IModelValueCollector {
     private Map<String, Object> queryParameters = new HashMap<>();
-    private String bodyData;
+    private Object bodyData;
     private String requestedMimeType;
     private String inputBodyContentType;
     private Map<String, Object> routeData = new HashMap<>();
@@ -24,7 +24,7 @@ public class DefaultModelValueCollector implements IModelValueCollector {
         return queryParameters;
     }
 
-    public String getBodyData() {
+    public Object getBodyData() {
         return bodyData;
     }
 

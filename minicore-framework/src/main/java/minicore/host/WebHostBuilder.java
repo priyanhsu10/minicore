@@ -4,6 +4,7 @@ import minicore.contracts.HttpContext;
 import minicore.contracts.IAction;
 import minicore.contracts.IActionDelegate;
 import minicore.contracts.filters.IFilterProvider;
+import minicore.contracts.formaters.IFormatProvider;
 import minicore.contracts.host.IHostBuilder;
 import minicore.contracts.host.IServer;
 import minicore.contracts.host.IStartup;
@@ -13,6 +14,7 @@ import minicore.contracts.mvc.MvcConfigurer;
 import minicore.endpoints.EndPointManger;
 import minicore.contracts.ioc.IServiceCollection;
 import minicore.ioc.ServiceCollection;
+import minicore.mvc.FormatProvider;
 import minicore.mvc.MvcHandler;
 import minicore.pipeline.PipelineBuilder;
 import org.slf4j.ILoggerFactory;
@@ -92,16 +94,21 @@ public class WebHostBuilder implements IHostBuilder {
 
         private void registerInitialServices(IServiceCollection iServiceCollection) {
         iServiceCollection.addSingleton(IServiceCollection.class,()->iServiceCollection);
-        iServiceCollection.addSingleton(MvcConfigurer.class,MvcConfigurer.class);
-        iServiceCollection.addSingleton(IFilterProvider.class, FilterProvider.class);
-        iServiceCollection.addTransient(IMvcHandler.class, MvcHandler.class);
-        iServiceCollection.addSingleton(ILoggerFactory.class, ()-> LoggerFactory.getILoggerFactory());
+            addMvcServices(iServiceCollection);
+            iServiceCollection.addSingleton(ILoggerFactory.class, ()-> LoggerFactory.getILoggerFactory());
 //        iServiceCollection.addTransient(Logger.class, ()-> LoggerFactory.getILoggerFactory().getLogger());
         //wherever resolver needed in the pipeline it is present
           HttpContext.services= iServiceCollection;
         }
 
-        private static void initialAction(HttpContext httpContext) {
+    private void addMvcServices(IServiceCollection iServiceCollection) {
+        iServiceCollection.addSingleton(MvcConfigurer.class,MvcConfigurer.class);
+        iServiceCollection.addSingleton(IFilterProvider.class, FilterProvider.class);
+        iServiceCollection.addSingleton(IFormatProvider.class, FormatProvider.class);
+        iServiceCollection.addTransient(IMvcHandler.class, MvcHandler.class);
+    }
+
+    private static void initialAction(HttpContext httpContext) {
         System.out.println("before first middleware");
 
         System.out.println("after first middleware");

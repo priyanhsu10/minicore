@@ -20,6 +20,8 @@ public class EndPoint {
     public String Pattern;
     public boolean isPattern = false;
     public IActionResult actionResult;
+    public String InputMediaType;
+    public String OutputMediaType;
 
 
     public Class getReturnType() {

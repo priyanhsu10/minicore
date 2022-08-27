@@ -1,4 +1,4 @@
-package minicore.contracts.filters;
+package minicore.contracts.annotations.filters;
 
 public @interface Authorize {
 }

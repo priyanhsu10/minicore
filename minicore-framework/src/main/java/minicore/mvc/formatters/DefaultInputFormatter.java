@@ -6,10 +6,15 @@ import minicore.contracts.formaters.IInputFormatter;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
-public class NullInputFormater implements IInputFormatter {
+public class DefaultInputFormatter implements IInputFormatter {
     @Override
     public boolean canSupport(HttpContext context) {
         return false;
+    }
+
+    @Override
+    public String supportedMediaType() {
+        return "*";
     }
 
     @Override
@@ -24,6 +29,5 @@ public class NullInputFormater implements IInputFormatter {
 
             throw new RuntimeException(e);
         }
-        ;
     }
 }

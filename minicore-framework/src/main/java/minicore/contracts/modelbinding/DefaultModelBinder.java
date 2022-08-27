@@ -45,12 +45,12 @@ public class DefaultModelBinder implements  IModelBinder{
                 // select supported input formatter
                 //if not support then throw exception => not supported
 
-                if (bindingResult.getBodyData() != null && !bindingResult.getBodyData().isEmpty()) {
-                    Object data = JsonHelper.deserialize(bindingResult.getBodyData(), p.getType());
-                    params.add(data);
-                    continue;
-
-                }
+//                if (bindingResult.getBodyData() != null && !bindingResult.getBodyData().isEmpty()) {
+//                    Object data = JsonHelper.deserialize(bindingResult.getBodyData(), p.getType());
+//                    params.add(data);
+//                    continue;
+//
+//                }
                 try {
                     params.add(p.getType().newInstance());
                 } catch (InstantiationException | IllegalAccessException e) {
