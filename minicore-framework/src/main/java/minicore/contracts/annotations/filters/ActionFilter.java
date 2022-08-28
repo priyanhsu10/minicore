@@ -1,22 +1,22 @@
-package minicore.contracts.filters;
+package minicore.contracts.annotations.filters;
 
 import minicore.contracts.HttpContext;
-import minicore.contracts.IAction;
+import minicore.contracts.filters.IActionFilter;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.logging.Filter;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
-public @interface ActionFilter {
+public @interface ActionFilter  {
 
     Class<? extends IActionFilter> filterClass();
 
 }
 @ActionFilter(filterClass = MyActionFilter.class)
+@Authorize
 class test{
      @ActionFilter(filterClass = MyActionFilter.class)
      public  void a(){}

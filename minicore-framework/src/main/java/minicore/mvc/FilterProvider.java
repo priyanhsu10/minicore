@@ -13,6 +13,7 @@ public class FilterProvider implements IFilterProvider {
     private List<IActionFilter> globalFilter = new ArrayList<>();
     private List<IAuthenticationFilter> authFilters = new ArrayList<>();
     private List<IExceptionFilter> exceptionFilters = new ArrayList<>();
+    private List<IResultExecutionFilter> resultExecutionFilters = new ArrayList<>();
 
     public FilterProvider(MvcConfigurer configurer) {
 
@@ -31,8 +32,13 @@ public class FilterProvider implements IFilterProvider {
     }
 
     @Override
-    public List<IExceptionFilter> getexceptionFilters() {
+    public List<IExceptionFilter> getExceptionFilters() {
         return exceptionFilters;
+    }
+
+    @Override
+    public List<IResultExecutionFilter> getResultExecutionFilters() {
+        return resultExecutionFilters;
     }
 
     private void preparefilters() {
@@ -45,6 +51,9 @@ public class FilterProvider implements IFilterProvider {
         //configure exception Filters
         prepareExceptionFilters();
 
+        // configure Result filters
+        prepareResultFilter();
+
     }
 
     private void prepareGlobalFilter() {
@@ -53,7 +62,12 @@ public class FilterProvider implements IFilterProvider {
             this.globalFilter.add(f);
         });
     }
-
+    private void prepareResultFilter() {
+        configurer.getResultExecutionFilter().forEach(x -> {
+            IResultExecutionFilter f = HttpContext.services.resolve(x);
+            this.resultExecutionFilters.add(f);
+        });
+    }
     private void prepareAuthFilters() {
 
         configurer.getAuthFilters().forEach(x -> {

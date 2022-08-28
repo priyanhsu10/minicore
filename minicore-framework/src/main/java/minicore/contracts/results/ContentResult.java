@@ -1,7 +1,25 @@
 package minicore.contracts.results;
 
-public class ContentResult extends ObjectResult{
+import minicore.contracts.HttpContext;
+
+public class ContentResult implements  IActionResult{
+    private  Object value;
     public ContentResult(Object value) {
-        super(value);
+     this.value=value;
+    }
+
+    @Override
+    public Object getValue() {
+        return null;
+    }
+
+    @Override
+    public void executeResult(HttpContext context) {
+
+    }
+
+    @Override
+    public int getHttpStatus() {
+        return 0;
     }
 }

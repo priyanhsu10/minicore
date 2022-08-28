@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface IModelValueCollector {
      Map<String, Object> getQueryParameters();
-    String getBodyData();
+    Object getBodyData();
     Map<String, Object> getRouteData();
     Map<String, String> getHeaders();
     void  setHttpContext(HttpContext httpContext);

@@ -5,5 +5,6 @@ import java.util.List;
 public interface IFilterProvider {
     List<IActionFilter>  getGlobalFilters();
     List<IAuthenticationFilter>  getAuthFilters();
-    List<IExceptionFilter>  getexceptionFilters();
+    List<IExceptionFilter> getExceptionFilters();
+    List<IResultExecutionFilter>  getResultExecutionFilters();
 }

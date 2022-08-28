@@ -1,10 +1,8 @@
 package minicore.host;
 
 import minicore.contracts.HttpContext;
-import minicore.contracts.IAction;
 
 import javax.servlet.*;
-import javax.swing.*;
 import java.io.IOException;
 
 public class AppFilter implements Filter {
@@ -20,9 +18,12 @@ public class AppFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         System.out.println(servletRequest);
         //trigger framework
-        HttpContext httpContext = new HttpContext(servletRequest, servletResponse);
+
         try {
+            HttpContext httpContext = new HttpContext(servletRequest, servletResponse);
             WebHostBuilder.getAction().invoke(httpContext);
+            WebHostBuilder.getServiceCollection().clearRequestObjects();
+
         } catch (Exception e) {
             throw  new RuntimeException(e);
         }

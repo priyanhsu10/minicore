@@ -10,9 +10,9 @@ import java.util.Optional;
 
 public class AppContainer {
     public final HashMap<Class, Descriptor> tank = new HashMap<>();
-    public  HashMap<Class, Object> singletonTank = new HashMap<>();
+    public HashMap<Class, Object> singletonTank = new HashMap<>();
     // this hashMap will be clean at every request end
-    public  HashMap<Class,Object> scopeTank=new HashMap<>();
+    public HashMap<Class, Object> scopeTank = new HashMap<>();
 
     public <Source> void addTransient(Class<Source> source, Class<? extends Source> target) {
         validate(target);
@@ -26,7 +26,7 @@ public class AppContainer {
 
     private void validate(Class target) {
         if (Modifier.isAbstract(target.getModifiers())) {
-            throw new RuntimeException("Invalid type to register :" +target.getName() );
+            throw new RuntimeException("Invalid type to register :" + target.getName());
         }
     }
 
@@ -43,20 +43,26 @@ public class AppContainer {
     public <T> T resolve(Class<T> source) {
         if (tank.containsKey(source)) {
             Descriptor descriptor = tank.get(source);
-            return source.cast(createInstance(source,descriptor));
+            return source.cast(createInstance(source, descriptor));
+        } else if (singletonTank.containsKey(source)) {
+            return source.cast(singletonTank.get(source));
+        } else if (scopeTank.containsKey(source)) {
+            return source.cast(scopeTank.get(source));
         } else {
             throw new RuntimeException("Type Not register in container");
         }
+
+
     }
 
     public Object createInstance(Class source, Descriptor descriptor) {
-       boolean isSingleton=  descriptor.getScope().equals(Scope.Singleton);
-        boolean isScope=  descriptor.getScope().equals(Scope.Singleton);
-        if(isScope && scopeTank.containsKey(source)){
+        boolean isSingleton = descriptor.getScope().equals(Scope.Singleton);
+        boolean isScope = descriptor.getScope().equals(Scope.RequestScope);
+        if (isScope && scopeTank.containsKey(source)) {
             return scopeTank.get(source);
         }
-        if(isSingleton && singletonTank.containsKey(source)){
-         return singletonTank.get(source);
+        if (isSingleton && singletonTank.containsKey(source)) {
+            return singletonTank.get(source);
         }
         Optional<Constructor<?>> constructor = Arrays.stream(descriptor.getImplementer().getConstructors())
                 .max(Comparator.comparingInt(Constructor::getParameterCount));
@@ -70,11 +76,11 @@ public class AppContainer {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-            if(isSingleton && !singletonTank.containsKey(source)){
-                singletonTank.put(source,o);
+            if (isSingleton && !singletonTank.containsKey(source)) {
+                singletonTank.put(source, o);
             }
-            if(isScope && !scopeTank.containsKey(source)){
-                scopeTank.put(source,o);
+            if (isScope && !scopeTank.containsKey(source)) {
+                scopeTank.put(source, o);
             }
             return o;
         }
@@ -85,11 +91,11 @@ public class AppContainer {
             Object o = descriptor.getImplementer()
                     .getConstructor(typeParameters)
                     .newInstance(parameters);
-            if(isSingleton &&  !singletonTank.containsKey(source)){
-                singletonTank.put(source,o);
+            if (isSingleton && !singletonTank.containsKey(source)) {
+                singletonTank.put(source, o);
             }
-            if(isScope && !scopeTank.containsKey(source)){
-                scopeTank.put(source,o);
+            if (isScope && !scopeTank.containsKey(source)) {
+                scopeTank.put(source, o);
             }
             return o;
         } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
@@ -102,16 +108,17 @@ public class AppContainer {
     }
 
     public void clearSchopeObjects() {
+
         scopeTank.clear();
-        scopeTank= new HashMap<>();
+        scopeTank = new HashMap<>();
     }
 
     @Override
     public void finalize() throws Throwable {
         scopeTank.clear();
-        scopeTank=null;
+        scopeTank = null;
         singletonTank.clear();
-        singletonTank=null;
+        singletonTank = null;
 
     }
 }

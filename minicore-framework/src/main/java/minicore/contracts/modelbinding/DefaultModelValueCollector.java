@@ -1,7 +1,6 @@
 package minicore.contracts.modelbinding;
 
-
-import minicore.contracts.EndPoint;
+import minicore.contracts.EndPointMetadata;
 import minicore.contracts.HttpContext;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,9 +12,7 @@ import java.util.stream.Collectors;
 
 public class DefaultModelValueCollector implements IModelValueCollector {
     private Map<String, Object> queryParameters = new HashMap<>();
-    private String bodyData;
-    private String requestedMimeType;
-    private String inputBodyContentType;
+    private Object bodyData;
     private Map<String, Object> routeData = new HashMap<>();
     private Map<String, String> headers = new HashMap<>();
     private HttpContext httpContext;
@@ -24,7 +21,7 @@ public class DefaultModelValueCollector implements IModelValueCollector {
         return queryParameters;
     }
 
-    public String getBodyData() {
+    public Object getBodyData() {
         return bodyData;
     }
 
@@ -52,15 +49,14 @@ public class DefaultModelValueCollector implements IModelValueCollector {
 
     private void collectDataFromRequest() {
 
-
-        String method = httpContext.getEndpoint().HttpMethod;
-//        if(method.equals("GET") || method.equals("DELETE") ){
-        //no need to read the body form request
+        String method = httpContext.getEndPointMetadata().HttpMethod;
+        // if(method.equals("GET") || method.equals("DELETE") ){
+        // no need to read the body form request
         this.queryParameters = queryStringBinder(httpContext.getRequest().getQueryString());
         this.headers = collectHeaderValues(httpContext.getRequest());
 
-        if (httpContext.getEndpoint().isPattern) {
-            routeData = routeDataBinder(httpContext.getEndpoint(),
+        if (httpContext.getEndPointMetadata().isPattern) {
+            routeData = routeDataBinder(httpContext.getEndPointMetadata(),
                     httpContext.getRoute());
         }
         if (method.equals("PUT") || method.equals("POST")) {
@@ -74,8 +70,7 @@ public class DefaultModelValueCollector implements IModelValueCollector {
             }
 
         }
-        this.requestedMimeType = this.headers.getOrDefault("accept", "application/json");
-        this.inputBodyContentType = this.headers.getOrDefault("content-type", "application/json");
+
     }
 
     private Map<String, String> collectHeaderValues(HttpServletRequest request) {
@@ -103,16 +98,16 @@ public class DefaultModelValueCollector implements IModelValueCollector {
         return queryMap;
     }
 
-    public Map<String, Object> routeDataBinder(EndPoint endPoint, String routePath) {
+    public Map<String, Object> routeDataBinder(EndPointMetadata endPointMetadata, String routePath) {
 
         Map<String, Object> routData = new HashMap<>();
         String[] segments = routePath.split("/");
-        String[] tokens = endPoint.UrlTokens;
+        String[] tokens = endPointMetadata.UrlTokens;
         for (int i = 1; i < tokens.length; i++) {
             if (tokens[i].startsWith(":")) {
                 String value = segments[i];
                 String parameterName = tokens[i].substring(1);
-                Class<?> parameterType = endPoint.ParameterNameTypes.get(parameterName);
+                Class<?> parameterType = endPointMetadata.ParameterNameTypes.get(parameterName);
                 routData.put(parameterName, getObject(value, parameterType));
             }
         }
@@ -121,6 +116,7 @@ public class DefaultModelValueCollector implements IModelValueCollector {
     }
 
     private Object getObject(String value, Class<?> parameterType) {
+
         if (parameterType.isAssignableFrom(String.class)) {
             return value;
         }
@@ -136,11 +132,4 @@ public class DefaultModelValueCollector implements IModelValueCollector {
         return parameterType.cast(value);
     }
 
-    public String getRequestedMimeType() {
-        return requestedMimeType;
-    }
-
-    public String getInputBodyContentType() {
-        return inputBodyContentType;
-    }
 }

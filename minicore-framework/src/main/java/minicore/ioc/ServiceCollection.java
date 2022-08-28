@@ -47,4 +47,9 @@ public class ServiceCollection implements IServiceCollection {
     public <TSource> void addSingleton(Class<TSource> source, IResolveInstance<? extends TSource> resolve) {
         container.singletonTank.put(source,  resolve.resolve());
     }
+
+    @Override
+    public void clearRequestObjects() {
+        container.clearSchopeObjects();
+    }
 }

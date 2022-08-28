@@ -1,7 +1,7 @@
 package minicore.endpoints;
 
 import minicore.contracts.ControllerBase;
-import minicore.contracts.EndPoint;
+import minicore.contracts.EndPointMetadata;
 import minicore.contracts.annotations.http.*;
 import minicore.contracts.host.IStartup;
 import minicore.contracts.ioc.IServiceCollection;
@@ -19,7 +19,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class EndPointManger {
-    public static List<EndPoint> endPoints = new ArrayList<>();
+    public static List<EndPointMetadata> endPointMetadata = new ArrayList<>();
     private final Set<Class<? extends ControllerBase>> controllerClasses;
     private IServiceCollection serviceCollection;
 
@@ -64,67 +64,67 @@ public class EndPointManger {
                 continue;
             }
 
-            EndPoint endPoint = new EndPoint(m, controller);
-            setHttpMethod(m, endPoint);
+            EndPointMetadata endPointMetadata = new EndPointMetadata(m, controller);
+            setHttpMethod(m, endPointMetadata);
 
-            endPoint.DisplayName = BaseControllerPath + endPoint.DisplayName;
+            endPointMetadata.DisplayName = BaseControllerPath + endPointMetadata.DisplayName;
 
 
-            if (endPoint.DisplayName == null) {
+            if (endPointMetadata.DisplayName == null) {
                 continue;
             }
-            if (endPoint.DisplayName.startsWith("/")) {
-                endPoint.DisplayName = endPoint.DisplayName.substring(1);
+            if (endPointMetadata.DisplayName.startsWith("/")) {
+                endPointMetadata.DisplayName = endPointMetadata.DisplayName.substring(1);
             }
-            endPoint.UrlTokens = endPoint.DisplayName.split("/");
+            endPointMetadata.UrlTokens = endPointMetadata.DisplayName.split("/");
 
-            patternMatch(m, endPoint);
+            patternMatch(m, endPointMetadata);
 
 
-            endPoints.add(endPoint);
+            EndPointManger.endPointMetadata.add(endPointMetadata);
 
 
         }
     }
 
-    private void setHttpMethod(Method m, EndPoint endPoint) {
+    private void setHttpMethod(Method m, EndPointMetadata endPointMetadata) {
         if (m.isAnnotationPresent(Get.class)) {
-            endPoint.HttpMethod = "GET";
-            endPoint.DisplayName = m.getAnnotation(Get.class).path();
+            endPointMetadata.HttpMethod = "GET";
+            endPointMetadata.DisplayName = m.getAnnotation(Get.class).path();
 
 
         } else if (m.isAnnotationPresent(Post.class)) {
-            endPoint.HttpMethod = "POST";
-            endPoint.DisplayName = m.getAnnotation(Post.class).path();
+            endPointMetadata.HttpMethod = "POST";
+            endPointMetadata.DisplayName = m.getAnnotation(Post.class).path();
 
 
         } else if (m.isAnnotationPresent(Put.class)) {
-            endPoint.HttpMethod = "PUT";
-            endPoint.DisplayName = m.getAnnotation(Put.class).path();
+            endPointMetadata.HttpMethod = "PUT";
+            endPointMetadata.DisplayName = m.getAnnotation(Put.class).path();
 
         } else if (m.isAnnotationPresent(Delete.class)) {
-            endPoint.HttpMethod = "DELETE";
-            endPoint.DisplayName = m.getAnnotation(Delete.class).path();
+            endPointMetadata.HttpMethod = "DELETE";
+            endPointMetadata.DisplayName = m.getAnnotation(Delete.class).path();
 
 
         }
     }
 
-    private void patternMatch(Method m, EndPoint endPoint) {
-        if (!endPoint.DisplayName.contains(":")) {
+    private void patternMatch(Method m, EndPointMetadata endPointMetadata) {
+        if (!endPointMetadata.DisplayName.contains(":")) {
             return;
         }
         //contain the pattern
         //example account/:name/test/:id
-        endPoint.isPattern = true;
-        Arrays.stream(endPoint.UrlTokens).filter(x -> x.contains(":")).forEach(x -> {
+        endPointMetadata.isPattern = true;
+        Arrays.stream(endPointMetadata.UrlTokens).filter(x -> x.contains(":")).forEach(x -> {
             String paramName = x.substring(1);
             Parameter[] parameters = m.getParameters();
 
             Class<?>[] types = m.getParameterTypes();
             for (int i = 0; i < m.getParameterCount(); i++) {
                 if (parameters[i].getName().equalsIgnoreCase(paramName)) {
-                    endPoint.ParameterNameTypes.put(paramName, types[i]);
+                    endPointMetadata.ParameterNameTypes.put(paramName, types[i]);
                     break;
                 }
             }
@@ -134,14 +134,14 @@ public class EndPointManger {
 
     }
 
-    public EndPoint getEndPoint(String routPath, String method) {
+    public EndPointMetadata getEndPoint(String routPath, String method) {
         String[] segments = routPath.split("/");
         if (segments[0].length() == 0) {
 
             //base url  localhot:8090/
             throw new RuntimeException("no url match");
         }
-        List<EndPoint> candidates = endPoints.stream()
+        List<EndPointMetadata> candidates = endPointMetadata.stream()
                 .filter(x -> x.DisplayName.startsWith(segments[0]))
                 .filter(y -> y.HttpMethod.equals(method))
                 .filter(e -> e.UrlTokens.length == segments.length)
@@ -151,7 +151,7 @@ public class EndPointManger {
 
         }
 
-        EndPoint selected = candidates.stream().filter(x -> isEndpointMatch(x, routPath)).findFirst().orElseThrow(() ->
+        EndPointMetadata selected = candidates.stream().filter(x -> isEndpointMatch(x, routPath)).findFirst().orElseThrow(() ->
                 new RuntimeException("No route path Match"));
 
 
@@ -161,10 +161,10 @@ public class EndPointManger {
     }
 
     //this logic will be  use in route data calculation
-    private boolean isEndpointMatch(EndPoint endPoint, String routPath) {
+    private boolean isEndpointMatch(EndPointMetadata endPointMetadata, String routPath) {
         String[] segments = routPath.split("/");
-        String[] tokens = endPoint.DisplayName.split("/");
-        if (!endPoint.isPattern && endPoint.DisplayName.equals(routPath)) {
+        String[] tokens = endPointMetadata.DisplayName.split("/");
+        if (!endPointMetadata.isPattern && endPointMetadata.DisplayName.equals(routPath)) {
             //check and match for parameters
 
             return true;
@@ -176,7 +176,7 @@ public class EndPointManger {
                 if (tokens[i].startsWith(":")) {
                     String value = segments[i];
                     String parameterName = tokens[i].substring(1);
-                    Class<?> parameterType = endPoint.ParameterNameTypes.get(parameterName);
+                    Class<?> parameterType = endPointMetadata.ParameterNameTypes.get(parameterName);
                     routeParameters.add(getObject(value, parameterType));
                 } else {
                     if (!tokens[i].equals(segments[i])) {
