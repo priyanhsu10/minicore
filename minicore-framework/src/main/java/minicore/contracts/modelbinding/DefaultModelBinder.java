@@ -3,7 +3,6 @@ package minicore.contracts.modelbinding;
 import minicore.contracts.HttpContext;
 import minicore.contracts.formaters.IFormatProvider;
 import minicore.contracts.formaters.IInputFormatter;
-import minicore.json.JsonHelper;
 import minicore.mvc.filters.MvcException;
 
 import java.lang.reflect.Method;
@@ -19,42 +18,43 @@ public class DefaultModelBinder implements IModelBinder {
     }
 
     @Override
-    public void bindModel(HttpContext actionContext) {
-        actionContext.getEndpoint().MethodParameters = resolveParameter(actionContext);
+    public void bindModel(HttpContext context) {
+        context.ActionContext.MethodParameters = resolveParameter(context);
     }
 
-    private Object[] resolveParameter(HttpContext actionContext) {
-        Method m = actionContext.getEndpoint().ActionMethod;
+    private Object[] resolveParameter(HttpContext context) {
+        Method m = context.getEndPointMetadata().ActionMethod;
         if (m.getParameterCount() == 0) {
             return new Object[]{};
         }
         List<Object> params = new ArrayList<>(m.getParameterCount());
         Class<?>[] types = m.getParameterTypes();
-        DefaultModelValueCollector bindingResult = new DefaultModelValueCollector(actionContext);
+
 
         Parameter[] parameters = m.getParameters();
+        IModelValueCollector modelValueCollector=context.ActionContext.ModelValueCollector;
 //  todo: apply  attribute from query ,from route ,form body
         for (Parameter p : parameters) {
 
-            if (bindingResult.getRouteData().containsKey(p.getName())) {
+            if (modelValueCollector.getRouteData().containsKey(p.getName())) {
 
-                params.add(bindingResult.getRouteData().get(p.getName()));
+                params.add(modelValueCollector.getRouteData().get(p.getName()));
                 continue;
             }
-            if (bindingResult.getQueryParameters().containsKey(p.getName())) {
-                params.add(bindingResult.getQueryParameters().get(p.getName()));
+            if (modelValueCollector.getQueryParameters().containsKey(p.getName())) {
+                params.add(modelValueCollector.getQueryParameters().get(p.getName()));
                 continue;
             }
-            if (actionContext.getRequest().getMethod().equals("POST") ||
-                    actionContext.getRequest().getMethod().equals("PUT")) {
+            if (context.getRequest().getMethod().equals("POST") ||
+                    context.getRequest().getMethod().equals("PUT")) {
                 //validate accept header and check support for
-                if (!provider.canSuportedInputMediaType(actionContext.getEndpoint().InputMediaType)) {
+                if (!provider.canSuportedInputMediaType(context.ActionContext.InputMediaType)) {
                     //if not support then throw exception => not supported
                     throw new MvcException("Content type not supported");
                 }
                 // select supported input formatter
-                IInputFormatter formatter = provider.getSuportedInputFormatter(actionContext);
-                params.add(formatter.format(actionContext, p.getType()));
+                IInputFormatter formatter = provider.getSuportedInputFormatter(context);
+                params.add(formatter.format(context, p.getType()));
                 continue;
 
             }

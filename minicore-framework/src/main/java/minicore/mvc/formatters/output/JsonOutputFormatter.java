@@ -15,15 +15,15 @@ public class JsonOutputFormatter implements IOutputFormatter {
 
     @Override
     public boolean canSupport(HttpContext context) {
-        return context.getEndpoint().OutputMediaType.equals("application/json");
+        return context.ActionContext.OutputMediaType.equals("application/json");
     }
 
     @Override
     public void WriteResponse(HttpContext context)  {
         try {
-            String value= JsonHelper.serialize(context.getActionResult().getValue());
+            String value= JsonHelper.serialize(context.ActionContext.ActionResult.getValue());
             context.getResponse().getWriter().write(value);
-            context.getResponse().setStatus(context.getActionResult().getHttpStatus());
+            context.getResponse().setStatus(context.ActionContext.ActionResult.getHttpStatus());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

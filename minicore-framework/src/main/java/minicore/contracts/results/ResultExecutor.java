@@ -20,7 +20,7 @@ public class ResultExecutor implements IResultExectutor {
         executResultFilters(context,  this.iFilterProvider.getResultExecutionFilters());
         executResultFilters(context, methodResultFilters);
         //3.exectute result
-        context.getActionResult().executeResult(context);
+        context.ActionContext.ActionResult.executeResult(context);
     }
 
     private void executResultFilters(HttpContext context, List<IResultExecutionFilter> resultFilters) {

@@ -14,7 +14,7 @@ public class MvcExcetionFilter implements IExceptionFilter {
     @Override
     public <T extends RuntimeException> void onException(HttpContext context, T e) {
 
-        context.getEndpoint().actionResult= new ObjectResult(new MvcException(e), HttpStatus.InternalServerError);
+        context.ActionContext.ActionResult= new ObjectResult(new MvcException(e), HttpStatus.InternalServerError);
     }
 
 }

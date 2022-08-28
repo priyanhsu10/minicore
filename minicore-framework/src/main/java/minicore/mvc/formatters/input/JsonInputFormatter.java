@@ -2,7 +2,6 @@ package minicore.mvc.formatters.input;
 
 import minicore.contracts.HttpContext;
 import minicore.contracts.formaters.IInputFormatter;
-import minicore.contracts.formaters.IOutputFormatter;
 import minicore.json.JsonHelper;
 
 import java.io.IOException;
@@ -35,12 +34,12 @@ public class JsonInputFormatter implements IInputFormatter {
 
     @Override
     public boolean canSupport(HttpContext context) {
-        return context.getEndpoint().InputMediaType.equals("application/json");
+        return context.ActionContext.InputMediaType.equals("application/json");
     }
 
     public void WriteResponse(HttpContext context)  {
         try {
-            String value= JsonHelper.serialize(context.getActionResult().getValue());
+            String value= JsonHelper.serialize(context.ActionContext.ActionResult.getValue());
             context.getResponse().getWriter().write(value);
         } catch (IOException e) {
             throw new RuntimeException(e);

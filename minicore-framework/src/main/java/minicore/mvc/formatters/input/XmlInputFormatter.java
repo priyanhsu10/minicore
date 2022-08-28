@@ -2,7 +2,6 @@ package minicore.mvc.formatters.input;
 
 import minicore.contracts.HttpContext;
 import minicore.contracts.formaters.IInputFormatter;
-import minicore.contracts.formaters.IOutputFormatter;
 import minicore.json.XMLHelper;
 
 import java.io.IOException;
@@ -35,12 +34,12 @@ public class XmlInputFormatter implements IInputFormatter {
 
     @Override
     public boolean canSupport(HttpContext context) {
-        return context.getEndpoint().OutputMediaType.equals("application/xml");
+        return context.ActionContext.OutputMediaType.equals("application/xml");
     }
 
     public void WriteResponse(HttpContext context)  {
         try {
-            String value= XMLHelper.serialize(context.getActionResult().getValue());
+            String value= XMLHelper.serialize(context.ActionContext.ActionResult.getValue());
             context.getResponse().getWriter().write(value);
         } catch (IOException e) {
             throw new RuntimeException(e);

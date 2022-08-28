@@ -15,15 +15,15 @@ public class XmlOutputFormatter implements IOutputFormatter {
 
     @Override
     public boolean canSupport(HttpContext context) {
-        return context.getEndpoint().OutputMediaType.equals("application/xml");
+        return context.ActionContext.OutputMediaType.equals("application/xml");
     }
 
     @Override
     public void WriteResponse(HttpContext context)  {
         try {
-            String value= XMLHelper.serialize(context.getActionResult().getValue());
+            String value= XMLHelper.serialize(context.ActionContext.ActionResult.getValue());
             context.getResponse().getWriter().write(value);
-            context.getResponse().setStatus(context.getActionResult().getHttpStatus());
+            context.getResponse().setStatus(context.ActionContext.ActionResult.getHttpStatus());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

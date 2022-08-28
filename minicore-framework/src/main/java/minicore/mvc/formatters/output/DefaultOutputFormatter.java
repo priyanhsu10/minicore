@@ -18,7 +18,7 @@ public class DefaultOutputFormatter implements IOutputFormatter {
 
     @Override
     public boolean canSupport(HttpContext context) {
-        return supportedMediatTypes.contains(context.getEndpoint().InputMediaType);
+        return supportedMediatTypes.contains(context.ActionContext.InputMediaType);
     }
 
     @Override
@@ -29,9 +29,9 @@ public class DefaultOutputFormatter implements IOutputFormatter {
     @Override
     public void WriteResponse(HttpContext context) {
         try {
-            String value = JsonHelper.serialize(context.getActionResult().getValue());
+            String value = JsonHelper.serialize(context.ActionContext.ActionResult.getValue());
             context.getResponse().getWriter().write(value);
-            context.getResponse().setStatus(context.getActionResult().getHttpStatus());
+            context.getResponse().setStatus(context.ActionContext.ActionResult.getHttpStatus());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

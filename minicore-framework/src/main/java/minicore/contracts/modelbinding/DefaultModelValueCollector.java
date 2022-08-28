@@ -49,14 +49,14 @@ public class DefaultModelValueCollector implements IModelValueCollector {
 
     private void collectDataFromRequest() {
 
-        String method = httpContext.getEndpoint().HttpMethod;
+        String method = httpContext.getEndPointMetadata().HttpMethod;
         // if(method.equals("GET") || method.equals("DELETE") ){
         // no need to read the body form request
         this.queryParameters = queryStringBinder(httpContext.getRequest().getQueryString());
         this.headers = collectHeaderValues(httpContext.getRequest());
 
-        if (httpContext.getEndpoint().isPattern) {
-            routeData = routeDataBinder(httpContext.getEndpoint(),
+        if (httpContext.getEndPointMetadata().isPattern) {
+            routeData = routeDataBinder(httpContext.getEndPointMetadata(),
                     httpContext.getRoute());
         }
         if (method.equals("PUT") || method.equals("POST")) {
