@@ -1,4 +1,4 @@
-package minicore.mvc;
+package minicore.mvc.formatters;
 
 import minicore.contracts.HttpContext;
 import minicore.contracts.formaters.IFormatProvider;
@@ -6,9 +6,8 @@ import minicore.contracts.formaters.IInputFormatter;
 import minicore.contracts.formaters.IOutputFormatter;
 import minicore.contracts.mvc.MvcConfigurer;
 import minicore.contracts.results.SupportedMediaTypes;
-import minicore.mvc.formatters.JsonOutputFormatter;
-import minicore.mvc.formatters.DefaultInputFormatter;
-import org.eclipse.jetty.util.IO;
+import minicore.mvc.formatters.input.DefaultInputFormatter;
+import minicore.mvc.formatters.output.JsonOutputFormatter;
 
 import java.util.ArrayList;
 import java.util.List;

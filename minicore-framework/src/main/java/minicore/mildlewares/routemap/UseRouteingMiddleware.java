@@ -1,6 +1,5 @@
 package minicore.mildlewares.routemap;
 
-
 import minicore.contracts.*;
 import minicore.contracts.IMiddleware;
 import minicore.host.WebHostBuilder;
@@ -9,7 +8,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public class UseRouteingMiddleware implements IMiddleware {
-    //inject dependency
+    // inject dependency
     private IActionDelegate action;
 
     public UseRouteingMiddleware() {
@@ -24,7 +23,6 @@ public class UseRouteingMiddleware implements IMiddleware {
     @Override
     public void next(HttpContext httpContext) throws Exception {
 
-
         try {
             setRoutingData(httpContext);
             action.invoke(httpContext);
@@ -32,7 +30,6 @@ public class UseRouteingMiddleware implements IMiddleware {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
     }
 
@@ -43,7 +40,13 @@ public class UseRouteingMiddleware implements IMiddleware {
             routPath = routPath.substring(1);
         }
         actionContext.setRoute(routPath);
-        EndPoint e = WebHostBuilder.getEndPointManger().getEndPoint(routPath, actionContext.getRequest().getMethod());
+        EndPointMetadata e = WebHostBuilder.getEndPointManger().getEndPoint(routPath, actionContext.getRequest().getMethod());
+        // set contenttype
+        e.OutputMediaType = actionContext.getRequest().getHeader("accept");
+        e.OutputMediaType = e.OutputMediaType == null ? "application/json" : e.OutputMediaType;
+
+        e.InputMediaType = actionContext.getRequest().getHeader("content-type");
+        e.InputMediaType = e.InputMediaType == null ? "application/json" : e.InputMediaType;
         actionContext.setEndpoint(e);
     }
 }

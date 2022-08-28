@@ -1,11 +1,15 @@
 package minicore.contracts.pipeline;
 
-import minicore.contracts.IAction;
-import minicore.contracts.IActionDelegate;
 import minicore.contracts.IMiddleware;
 
-public interface IApplicationBuilder  {
-    IActionDelegate build();
-    IApplicationBuilder  use(Class<? extends IMiddleware> middlewareType);
-    IApplicationBuilder map(String url,IAction action);
+import java.util.ArrayList;
+import java.util.List;
+
+public interface IApplicationBuilder {
+    IApplicationBuilder use(Class<? extends IMiddleware> middlewareType);
+    IApplicationBuilder useRouting();
+    IApplicationBuilder useEndpoints();
+    IApplicationBuilder useStaticFiles();
+    IApplicationBuilder useAuthentication();
+    List<Class<? extends IMiddleware>> getMidlewareTypes();
 }

@@ -5,6 +5,9 @@ import minicore.contracts.formaters.IFormatProvider;
 import minicore.contracts.formaters.IOutputFormatter;
 
 public class ObjectResult extends ActionResult {
+    public ObjectResult(Object value, int httpStatus) {
+        super(value, httpStatus);
+    }
 
     public ObjectResult(Object value) {
         super(value);
@@ -20,7 +23,7 @@ public class ObjectResult extends ActionResult {
 
     @Override
     public int getHttpStatus() {
-        return HttpStatus.OK;
+        return httpStatus;
     }
 
 }

@@ -1,4 +1,4 @@
-package minicore.mvc.formatters;
+package minicore.mvc.formatters.input;
 
 import minicore.contracts.HttpContext;
 import minicore.contracts.formaters.IInputFormatter;
@@ -18,7 +18,7 @@ public class DefaultInputFormatter implements IInputFormatter {
     }
 
     @Override
-    public Object format(HttpContext context) {
+    public Object format(HttpContext context,Class bodyType) {
         try {
             return context.getRequest()
                     .getReader()

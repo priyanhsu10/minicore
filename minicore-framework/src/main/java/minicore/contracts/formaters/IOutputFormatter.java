@@ -1,6 +1,7 @@
 package minicore.contracts.formaters;
 
 import minicore.contracts.HttpContext;
+import minicore.contracts.results.IActionResult;
 
 import java.io.IOException;
 

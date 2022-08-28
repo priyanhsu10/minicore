@@ -1,6 +1,7 @@
 package minicore.contracts;
 
 import minicore.contracts.ioc.IServiceCollection;
+import minicore.contracts.results.IActionResult;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -9,12 +10,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 
 public class HttpContext {
+    //custom data can keep
     private final HashMap<String, Object> data;
     private HttpServletRequest request;
     private HttpServletResponse response;
-    private EndPoint endpoint;
+    private EndPointMetadata endpoint;
 
-    private Object actionResult;
+    private IActionResult actionResult;
     public  static IServiceCollection services;
 
     public String getRoute() {
@@ -27,22 +29,22 @@ public class HttpContext {
 
     private String  route;
 
-    public Object getActionResult() {
+    public IActionResult getActionResult() {
         return actionResult;
     }
 
-    public void setActionResult(Object actionResult) {
+    public void setActionResult(  IActionResult   actionResult) {
         this.actionResult = actionResult;
     }
 
-    public EndPoint getEndpoint() {
+    public EndPointMetadata getEndpoint() {
         return endpoint;
     }
 
-    public void setEndpoint(EndPoint endpoint) {
+    public void setEndpoint(EndPointMetadata endpoint) {
         this.endpoint = endpoint;
     }
-
+   //for test perpose
     public void setRequest(HttpServletRequest request) {
         this.request = request;
     }
@@ -50,7 +52,7 @@ public class HttpContext {
     public HttpServletResponse getResponse() {
         return response;
     }
-
+    //for test perpose
     public void setResponse(HttpServletResponse response) {
         this.response = response;
     }

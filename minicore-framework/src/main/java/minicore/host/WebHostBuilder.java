@@ -1,35 +1,31 @@
 package minicore.host;
 
-import minicore.contracts.HttpContext;
-import minicore.contracts.IAction;
 import minicore.contracts.IActionDelegate;
-import minicore.contracts.filters.IFilterProvider;
-import minicore.contracts.formaters.IFormatProvider;
 import minicore.contracts.host.IHostBuilder;
 import minicore.contracts.host.IServer;
 import minicore.contracts.host.IStartup;
-import minicore.mvc.FilterProvider;
-import minicore.contracts.mvc.IMvcHandler;
-import minicore.contracts.mvc.MvcConfigurer;
-import minicore.endpoints.EndPointManger;
 import minicore.contracts.ioc.IServiceCollection;
+import minicore.contracts.pipeline.IApplicationBuilder;
+import minicore.contracts.pipeline.IPipelineBuilder;
+import minicore.endpoints.EndPointManger;
 import minicore.ioc.ServiceCollection;
-import minicore.mvc.FormatProvider;
-import minicore.mvc.MvcHandler;
+import minicore.mvc.MveHelper;
+import minicore.pipeline.ApplicationBuilder;
 import minicore.pipeline.PipelineBuilder;
-import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 public class WebHostBuilder implements IHostBuilder {
     private static IActionDelegate action;
     private static EndPointManger endPointManger;
     private static IServiceCollection serviceCollection;
-    private  static  PipelineBuilder pipelineBuilder;
-
+    private  static IPipelineBuilder pipelineBuilder;
+    private  static IApplicationBuilder applicationBuilder;
     public static IActionDelegate getAction() {
         return action;
     }
-
+    private static Logger logger = LoggerFactory.getLogger(WebHostBuilder.class);
     public static EndPointManger getEndPointManger() {
         return endPointManger;
     }
@@ -42,7 +38,7 @@ public class WebHostBuilder implements IHostBuilder {
 
     }
 
-    public static PipelineBuilder getPipelineBuilder() {
+    public static IPipelineBuilder getPipelineBuilder() {
         return pipelineBuilder;
     }
 
@@ -63,13 +59,18 @@ public class WebHostBuilder implements IHostBuilder {
             serviceCollection=new ServiceCollection();
             
             endPointManger = new EndPointManger(startupClass,serviceCollection);
-            pipelineBuilder = new PipelineBuilder(serviceCollection);
+            applicationBuilder= new ApplicationBuilder(serviceCollection);
+            pipelineBuilder = new PipelineBuilder(serviceCollection,applicationBuilder);
             useStartup(startupClass,serviceCollection);
             action = pipelineBuilder.build();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+            logger.error(e.getLocalizedMessage(),e);
+            throw new RuntimeException(e);
         } catch (Exception e) {
             e.printStackTrace();
+            logger.error(e.getLocalizedMessage(),e);
+            throw new RuntimeException(e);
         }
 
 
@@ -83,43 +84,24 @@ public class WebHostBuilder implements IHostBuilder {
 
         public void useStartup(Class<? extends IStartup> startupClass, IServiceCollection iServiceCollection) throws Exception {
         IStartup startup = (IStartup) startupClass.getDeclaredConstructor().newInstance();
-        registerInitialServices(iServiceCollection);
-        startup.configureServices(iServiceCollection);
-        
+            logger.info("register initial service pipeline");
+            MveHelper.RegisterServices(iServiceCollection);
+            MveHelper.Configure(iServiceCollection);
+           startup.configureServices(iServiceCollection);
 
-        addInitialFilters();
-        startup.configure(pipelineBuilder);
+           logger.info("configure pipeline");
+           startup.configure(applicationBuilder);
 
     }
 
-        private void registerInitialServices(IServiceCollection iServiceCollection) {
-        iServiceCollection.addSingleton(IServiceCollection.class,()->iServiceCollection);
-            addMvcServices(iServiceCollection);
-            iServiceCollection.addSingleton(ILoggerFactory.class, ()-> LoggerFactory.getILoggerFactory());
-//        iServiceCollection.addTransient(Logger.class, ()-> LoggerFactory.getILoggerFactory().getLogger());
-        //wherever resolver needed in the pipeline it is present
-          HttpContext.services= iServiceCollection;
-        }
 
-    private void addMvcServices(IServiceCollection iServiceCollection) {
-        iServiceCollection.addSingleton(MvcConfigurer.class,MvcConfigurer.class);
-        iServiceCollection.addSingleton(IFilterProvider.class, FilterProvider.class);
-        iServiceCollection.addSingleton(IFormatProvider.class, FormatProvider.class);
-        iServiceCollection.addTransient(IMvcHandler.class, MvcHandler.class);
-    }
 
-    private static void initialAction(HttpContext httpContext) {
-        System.out.println("before first middleware");
 
-        System.out.println("after first middleware");
-    }
 
     public  static WebHostBuilder build(String[] args){
 
         return  new WebHostBuilder(args);
 
     }
-    private void addInitialFilters() {
-       //add initial configuration middleware
-    }
+
 }

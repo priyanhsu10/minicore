@@ -10,12 +10,13 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
-public @interface ActionFilter {
+public @interface ActionFilter  {
 
     Class<? extends IActionFilter> filterClass();
 
 }
 @ActionFilter(filterClass = MyActionFilter.class)
+@Authorize
 class test{
      @ActionFilter(filterClass = MyActionFilter.class)
      public  void a(){}

@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EndPoint {
+public class EndPointMetadata {
     public Method ActionMethod;
     public Class<? extends ControllerBase> ControllerClass;
     public String HttpMethod;
@@ -23,7 +23,6 @@ public class EndPoint {
     public String InputMediaType;
     public String OutputMediaType;
 
-
     public Class getReturnType() {
         return ActionMethod.getReturnType();
     }
@@ -32,25 +31,33 @@ public class EndPoint {
         return null;
     }
 
-    public EndPoint(Method actionMethod, Class<? extends ControllerBase> controller) {
+    public EndPointMetadata(Method actionMethod, Class<? extends ControllerBase> controller) {
         ActionMethod = actionMethod;
         this.ControllerClass = controller;
 
     }
 
-    public void executeAction(Object controller) throws RuntimeException {
-        Object result = null;
+    public IActionResult executeAction(Object controller) throws RuntimeException {
+
         try {
-            result = ActionMethod.invoke(controller, MethodParameters);
+            Object result = ActionMethod.invoke(controller, MethodParameters);
 
             if (result.getClass().isAssignableFrom(IActionResult.class)) {
-                actionResult = (IActionResult) result;
+                return (IActionResult) result;
+            } else {
+                return new ObjectResult(result);
             }
-            actionResult = new ObjectResult(result);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         } catch (RuntimeException exception) {
             throw exception;
         }
+    }
+
+    public void clear() {
+
+        actionResult = null;
+        MethodParameters = null;
+
     }
 }

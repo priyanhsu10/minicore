@@ -30,7 +30,7 @@ public class ExceptionMiddleware implements IMiddleware {
             e.setMessage(exception.getLocalizedMessage());
             e.setErrorCode(500);
             ExceptionResult result = new ExceptionResult(e);
-            String data = JsonHelper.serialize(result, ExceptionResult.class);
+            String data = JsonHelper.serialize(result);
             actionContext.getResponse().getWriter().println(data);
             actionContext.getResponse().setStatus(500);
 

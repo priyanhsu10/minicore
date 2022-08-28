@@ -12,16 +12,18 @@ import testclient.services.TestService;
 
 public class AppStartup implements IStartup {
 
+    //Register your service with IOC Container
     @Override
     public void configureServices(IServiceCollection service) {
         service.addSingleton(ITestService.class, TestService.class);
     }
-
+//build your pipeline
     @Override
     public void configure(IApplicationBuilder app) {
         app.use(ExceptionMiddleware.class);
-        app.use(UseRouteingMiddleware.class);
-        app.use(EndPointExecutorMiddleware.class);
+        app.useRouting(); //rout endPoint selector
+        //add custom middlewares
+        app.useEndpoints();//Endpoint executor
     }
 
 }

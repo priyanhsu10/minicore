@@ -1,16 +1,16 @@
 package minicore.json;
 
+    import com.fasterxml.jackson.core.JsonProcessingException;
+    import com.fasterxml.jackson.databind.json.JsonMapper;
+    import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.json.JsonMapper;
+    import java.io.ByteArrayOutputStream;
+    import java.util.List;
 
-import java.io.ByteArrayOutputStream;
-import java.util.List;
-
-public class JsonHelper {
-    public  static JsonMapper jsonMapper ;
+public class XMLHelper {
+    public  static XmlMapper xmlMapper;
     static {
-        jsonMapper = new JsonMapper();
+        xmlMapper = new XmlMapper();
 
     }
     public  static String serialize(Object object) {
@@ -18,7 +18,7 @@ public class JsonHelper {
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-            return   jsonMapper.writeValueAsString(object);
+            return   xmlMapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
             throw  new RuntimeException(e);
         }
@@ -28,9 +28,9 @@ public class JsonHelper {
         // todo:see you latter this condition
         if( aClass.isAssignableFrom(List.class)){
 
-        }
+       }
         try {
-            return   jsonMapper.readValue(data,aClass);
+            return   xmlMapper.readValue(data,aClass);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             throw  new RuntimeException(e);
