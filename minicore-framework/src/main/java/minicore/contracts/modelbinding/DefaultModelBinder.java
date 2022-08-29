@@ -32,7 +32,8 @@ public class DefaultModelBinder implements IModelBinder {
 
 
         Parameter[] parameters = m.getParameters();
-        IModelValueCollector modelValueCollector=context.ActionContext.ModelValueCollector;
+        IModelValueCollector modelValueCollector=new DefaultModelValueCollector(context);
+        context.ActionContext.ModelValueCollector=modelValueCollector;
 //  todo: apply  attribute from query ,from route ,form body
         for (Parameter p : parameters) {
 

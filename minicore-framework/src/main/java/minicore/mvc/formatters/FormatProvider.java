@@ -41,12 +41,13 @@ public class FormatProvider implements IFormatProvider {
 
     @Override
     public boolean canSuportedInputMediaType(String mediaType) {
-        return false;
+        return  inputMediaTypes.stream().filter(x->x.equals(mediaType)).findAny().isPresent();
     }
 
     @Override
     public boolean canSuportedOutpMediaType(String mediaType) {
-        return false;
+     return  outputMediaTypes.stream().filter(x->x.equals(mediaType)).findAny().isPresent();
+
     }
 
     @Override

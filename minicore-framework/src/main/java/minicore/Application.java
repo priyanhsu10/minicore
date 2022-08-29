@@ -2,10 +2,12 @@ package minicore;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import minicore.contracts.host.IStartup;
 import minicore.contracts.ioc.IServiceCollection;
 import minicore.contracts.mvc.MvcConfigurer;
 import minicore.contracts.pipeline.IApplicationBuilder;
+import minicore.json.XMLHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +15,7 @@ import java.util.List;
 public class Application {
     public static void main(String[] args) throws JsonProcessingException {
 
-        JsonMapper j = new JsonMapper();
+
         Model m = new Model();
         m.setId(1);
         m.setName("anshu");
@@ -24,7 +26,7 @@ public class Application {
         m.setName("priya");
         mlist.add(m2);
 
-        String s=j.writeValueAsString(mlist);
+        String s= XMLHelper.serialize(mlist);
 
         System.out.println(s);
 

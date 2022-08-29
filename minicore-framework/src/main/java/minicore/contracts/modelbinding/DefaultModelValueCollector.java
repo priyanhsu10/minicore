@@ -5,9 +5,7 @@ import minicore.contracts.HttpContext;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DefaultModelValueCollector implements IModelValueCollector {
@@ -75,12 +73,12 @@ public class DefaultModelValueCollector implements IModelValueCollector {
 
     private Map<String, String> collectHeaderValues(HttpServletRequest request) {
 
-        Map<String, String> header = new HashMap<>();
-        while (request.getHeaderNames().hasMoreElements()) {
-            String key = request.getHeaderNames().nextElement();
-            header.put(key, request.getHeader(key));
+        Map<String, String> headerMap = new HashMap<>();
+        if (request.getHeaderNames() != null) {
+            List<String> headers = Collections.list(request.getHeaderNames()).stream().collect(Collectors.toList());
+            headers.stream().forEach(x -> headerMap.put(x, request.getHeader(x)));
         }
-        return header;
+        return headerMap;
     }
 
     public Map<String, Object> queryStringBinder(String query) {
