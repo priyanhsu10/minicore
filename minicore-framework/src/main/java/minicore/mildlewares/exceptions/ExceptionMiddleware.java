@@ -7,6 +7,7 @@ import minicore.contracts.IMiddleware;
 import minicore.json.JsonHelper;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 public class ExceptionMiddleware implements IMiddleware {
     public ExceptionMiddleware(){
@@ -20,10 +21,9 @@ public class ExceptionMiddleware implements IMiddleware {
     }
 
     @Override
-    public void next( HttpContext actionContext) throws IOException {
+    public void next( HttpContext httpContext) throws IOException {
         try {
-
-            action.invoke(actionContext);
+            action.invoke(httpContext);
         } catch (Exception exception) {
             Error e = new Error();
 
@@ -31,8 +31,8 @@ public class ExceptionMiddleware implements IMiddleware {
             e.setErrorCode(500);
             ExceptionResult result = new ExceptionResult(e);
             String data = JsonHelper.serialize(result);
-            actionContext.getResponse().getWriter().println(data);
-            actionContext.getResponse().setStatus(500);
+            httpContext.getResponse().getWriter().println(data);
+            httpContext.getResponse().setStatus(500);
 
 
         }

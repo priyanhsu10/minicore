@@ -14,8 +14,8 @@ public class JsonOutputFormatter implements IOutputFormatter {
     }
 
     @Override
-    public boolean canSupport(HttpContext context) {
-        return context.ActionContext.OutputMediaType.equals("application/json");
+    public boolean canSupport(String mediaType) {
+        return supportedMediaType().equals(mediaType);
     }
 
     @Override
@@ -24,6 +24,7 @@ public class JsonOutputFormatter implements IOutputFormatter {
             String value= JsonHelper.serialize(context.ActionContext.ActionResult.getValue());
             context.getResponse().getWriter().write(value);
             context.getResponse().setStatus(context.ActionContext.ActionResult.getHttpStatus());
+       context.getResponse().addHeader("Content-Type",supportedMediaType());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

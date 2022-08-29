@@ -12,6 +12,7 @@ import minicore.contracts.results.IActionResult;
 import minicore.contracts.results.IResultExectutor;
 import minicore.contracts.results.ObjectResult;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -43,46 +44,47 @@ public class MvcHandler implements IMvcHandler {
     }
 
     @Override
-    public void process(HttpContext context) {
-        prepareActionFilters(context);
-        Supplier<Boolean> isResultSet = () -> (context.ActionContext.ActionResult != null);
+    public void process(HttpContext httpContext) {
+        prepareActionFilters(httpContext);
+        Supplier<Boolean> isResultSet = () -> (httpContext.ActionContext.ActionResult != null);
         //1 . execute  authFilter
-        executeAuthFilters(context);
+        executeAuthFilters(httpContext);
 
         //auth filter set reusult mean not autherized
         //short-circuiting pipeline
         if (isResultSet.get()) return;
 
         //2. controller instantiation
-        Object c = HttpContext.services.resolve(context.getEndPointMetadata().ControllerClass);
+        Object c = HttpContext.services.resolve(httpContext.getEndPointMetadata().ControllerClass);
 
-        context.ActionContext.ModelValueCollector=new DefaultModelValueCollector(context);
+        httpContext.ActionContext.ModelValueCollector=new DefaultModelValueCollector(httpContext);
         try {
             //3.model binding
-            binder.bindModel(context);
+
+            binder.bindModel(httpContext);
             //4.execute before action global filter
             //5.execute controller before action filter
             //6. execute before action filter
 
-            executeFilterBeforeActionExecution(context);
+            executeFilterBeforeActionExecution(httpContext);
             if (isResultSet.get()) return;
 
             //7. execute action ()
-            context.ActionContext.ActionResult=executeAction(context,c);
+            httpContext.ActionContext.ActionResult=executeAction(httpContext,c);
             // 6. execute after action filter
             //5.execute controller after action filter
             // 4.execute after action global filter
-            executeFilterAfterActionExecuted(context);
+            executeFilterAfterActionExecuted(httpContext);
 
             //execute  result
-            resultExectutor.executeResult(context, getResultFilters(context));
+            resultExectutor.executeResult(httpContext, getResultFilters(httpContext));
 
             //
         } catch (RuntimeException e) {
 
             // execute exception filters
 
-            executeExceptionFilters(context, e);
+            executeExceptionFilters(httpContext, e);
         }
 
 

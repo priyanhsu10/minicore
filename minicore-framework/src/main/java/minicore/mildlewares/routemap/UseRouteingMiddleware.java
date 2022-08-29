@@ -7,6 +7,7 @@ import minicore.host.WebHostBuilder;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.stream.Collectors;
 
 public class UseRouteingMiddleware implements IMiddleware {
     // inject dependency
@@ -26,6 +27,7 @@ public class UseRouteingMiddleware implements IMiddleware {
 
         try {
             setRoutingData(httpContext);
+
             action.invoke(httpContext);
 
         } catch (IOException e) {
@@ -35,7 +37,6 @@ public class UseRouteingMiddleware implements IMiddleware {
     }
 
     private void setRoutingData(HttpContext context) throws IOException {
-        PrintWriter p = context.getResponse().getWriter();
         String routPath = context.getRequest().getRequestURI();
         if (routPath.startsWith("/")) {
             routPath = routPath.substring(1);

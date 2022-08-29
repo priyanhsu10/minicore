@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class DefaultInputFormatter implements IInputFormatter {
     @Override
-    public boolean canSupport(HttpContext context) {
+    public boolean canSupport(String context) {
         return false;
     }
 

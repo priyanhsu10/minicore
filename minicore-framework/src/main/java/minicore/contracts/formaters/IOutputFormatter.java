@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public interface IOutputFormatter {
     String supportedMediaType();
-    boolean canSupport(HttpContext context);
+    boolean canSupport(String mediaType);
 
     void WriteResponse(HttpContext context) ;
 }

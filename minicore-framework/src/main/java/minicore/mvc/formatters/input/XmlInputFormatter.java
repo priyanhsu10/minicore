@@ -33,8 +33,8 @@ public class XmlInputFormatter implements IInputFormatter {
     }
 
     @Override
-    public boolean canSupport(HttpContext context) {
-        return context.ActionContext.OutputMediaType.equals("application/xml");
+    public boolean canSupport(String mediaType) {
+        return supportedMediaType().equals(mediaType);
     }
 
     public void WriteResponse(HttpContext context)  {
