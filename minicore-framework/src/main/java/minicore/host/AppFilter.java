@@ -4,6 +4,7 @@ import minicore.contracts.HttpContext;
 
 import javax.servlet.*;
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 public class AppFilter implements Filter {
 
@@ -16,9 +17,6 @@ public class AppFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        System.out.println(servletRequest);
-        //trigger framework
-
         try {
             HttpContext httpContext = new HttpContext(servletRequest, servletResponse);
             WebHostBuilder.getAction().invoke(httpContext);

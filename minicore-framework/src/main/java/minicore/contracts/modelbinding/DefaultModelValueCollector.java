@@ -57,17 +57,17 @@ public class DefaultModelValueCollector implements IModelValueCollector {
             routeData = routeDataBinder(httpContext.getEndPointMetadata(),
                     httpContext.getRoute());
         }
-        if (method.equals("PUT") || method.equals("POST")) {
-            try {
-                bodyData = httpContext.getRequest()
-                        .getReader()
-                        .lines()
-                        .collect(Collectors.joining());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
+//        if (method.equals("PUT") || method.equals("POST")) {
+//            try {
+//                bodyData = httpContext.getRequest()
+//                        .getReader()
+//                        .lines()
+//                        .collect(Collectors.joining());
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//        }
 
     }
 

@@ -5,10 +5,12 @@ import minicore.contracts.formaters.IFormatProvider;
 import minicore.contracts.formaters.IInputFormatter;
 import minicore.mvc.filters.MvcException;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DefaultModelBinder implements IModelBinder {
     private final IFormatProvider provider;
@@ -22,8 +24,8 @@ public class DefaultModelBinder implements IModelBinder {
         context.ActionContext.MethodParameters = resolveParameter(context);
     }
 
-    private Object[] resolveParameter(HttpContext context) {
-        Method m = context.getEndPointMetadata().ActionMethod;
+    private Object[] resolveParameter(HttpContext httpContext) {
+        Method m = httpContext.getEndPointMetadata().ActionMethod;
         if (m.getParameterCount() == 0) {
             return new Object[]{};
         }
@@ -32,8 +34,8 @@ public class DefaultModelBinder implements IModelBinder {
 
 
         Parameter[] parameters = m.getParameters();
-        IModelValueCollector modelValueCollector=new DefaultModelValueCollector(context);
-        context.ActionContext.ModelValueCollector=modelValueCollector;
+        IModelValueCollector modelValueCollector=new DefaultModelValueCollector(httpContext);
+        httpContext.ActionContext.ModelValueCollector=modelValueCollector;
 //  todo: apply  attribute from query ,from route ,form body
         for (Parameter p : parameters) {
 
@@ -46,16 +48,19 @@ public class DefaultModelBinder implements IModelBinder {
                 params.add(modelValueCollector.getQueryParameters().get(p.getName()));
                 continue;
             }
-            if (context.getRequest().getMethod().equals("POST") ||
-                    context.getRequest().getMethod().equals("PUT")) {
+            if (httpContext.getRequest().getMethod().equals("POST") ||
+                    httpContext.getRequest().getMethod().equals("PUT") ) {
                 //validate accept header and check support for
-                if (!provider.canSuportedInputMediaType(context.ActionContext.InputMediaType)) {
+
+                if (!provider.canSuportedInputMediaType(httpContext.ActionContext.InputMediaType)) {
                     //if not support then throw exception => not supported
                     throw new MvcException("Content type not supported");
                 }
                 // select supported input formatter
-                IInputFormatter formatter = provider.getSuportedInputFormatter(context);
-                params.add(formatter.format(context, p.getType()));
+                IInputFormatter formatter = provider.getSuportedInputFormatter(httpContext.ActionContext.InputMediaType);
+
+                Object body=formatter.format(httpContext, p.getType());
+                params.add(body);
                 continue;
 
             }

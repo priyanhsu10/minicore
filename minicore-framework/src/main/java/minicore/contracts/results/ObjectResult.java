@@ -16,7 +16,7 @@ public class ObjectResult extends ActionResult {
     @Override
     public void executeResult(HttpContext context) {
         IFormatProvider provider = HttpContext.services.resolve(IFormatProvider.class);
-        IOutputFormatter formatter = provider.getSupportedOutputFormatter(context);
+        IOutputFormatter formatter = provider.getSupportedOutputFormatter(context.ActionContext.OutputMediaType);
         formatter.WriteResponse(context);
 
     }

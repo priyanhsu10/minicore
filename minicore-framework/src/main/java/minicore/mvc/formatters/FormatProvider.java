@@ -1,5 +1,6 @@
 package minicore.mvc.formatters;
 
+import minicore.contracts.ActionContext;
 import minicore.contracts.HttpContext;
 import minicore.contracts.formaters.IFormatProvider;
 import minicore.contracts.formaters.IInputFormatter;
@@ -51,13 +52,13 @@ public class FormatProvider implements IFormatProvider {
     }
 
     @Override
-    public IInputFormatter getSuportedInputFormatter(HttpContext context) {
+    public IInputFormatter getSuportedInputFormatter(String mediaType) {
 
-         return inputFormatters.stream().filter(x->x.canSupport(context)).findFirst().orElse(new DefaultInputFormatter());
+         return inputFormatters.stream().filter(x->x.canSupport(mediaType)).findFirst().orElse(new DefaultInputFormatter());
     }
 
     @Override
-    public IOutputFormatter getSupportedOutputFormatter(HttpContext context) {
-        return outputFormatters.stream().filter(x->x.canSupport(context)).findFirst().orElse(new JsonOutputFormatter());
+    public IOutputFormatter getSupportedOutputFormatter(String mediaType) {
+        return outputFormatters.stream().filter(x->x.canSupport(mediaType)).findFirst().orElse(new JsonOutputFormatter());
     }
 }

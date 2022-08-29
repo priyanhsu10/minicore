@@ -17,8 +17,8 @@ public class DefaultOutputFormatter implements IOutputFormatter {
     }
 
     @Override
-    public boolean canSupport(HttpContext context) {
-        return supportedMediatTypes.contains(context.ActionContext.InputMediaType);
+    public boolean canSupport(String mediaType) {
+        return supportedMediatTypes.contains(mediaType);
     }
 
     @Override

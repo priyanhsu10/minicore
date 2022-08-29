@@ -9,6 +9,7 @@ public class ActionContext {
     public String InputMediaType;
     public String OutputMediaType;
     public Object[] MethodParameters;
+    public Object Body;
     public  IModelValueCollector ModelValueCollector;
 
 

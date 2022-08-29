@@ -22,29 +22,19 @@ public class JsonInputFormatter implements IInputFormatter {
                     .lines()
                     .collect(Collectors.joining());
             if(data.isEmpty() || data==null){
-                return data;
+                return bodyType.newInstance();
             }
             return JsonHelper.deserialize(data,bodyType);
 
-        } catch (IOException e) {
+        } catch (IOException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public boolean canSupport(HttpContext context) {
-        return context.ActionContext.InputMediaType.equals("application/json");
+    public boolean canSupport(String context) {
+        return supportedMediaType().equals(context);
     }
-
-    public void WriteResponse(HttpContext context)  {
-        try {
-            String value= JsonHelper.serialize(context.ActionContext.ActionResult.getValue());
-            context.getResponse().getWriter().write(value);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 
 }
