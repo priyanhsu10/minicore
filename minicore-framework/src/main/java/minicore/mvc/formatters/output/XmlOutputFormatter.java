@@ -24,6 +24,8 @@ public class XmlOutputFormatter implements IOutputFormatter {
             String value= XMLHelper.serialize(context.ActionContext.ActionResult.getValue());
             context.getResponse().getWriter().write(value);
             context.getResponse().setStatus(context.ActionContext.ActionResult.getHttpStatus());
+            context.getResponse().addHeader("Content-Type",supportedMediaType());
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

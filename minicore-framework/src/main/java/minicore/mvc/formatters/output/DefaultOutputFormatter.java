@@ -32,6 +32,8 @@ public class DefaultOutputFormatter implements IOutputFormatter {
             String value = JsonHelper.serialize(context.ActionContext.ActionResult.getValue());
             context.getResponse().getWriter().write(value);
             context.getResponse().setStatus(context.ActionContext.ActionResult.getHttpStatus());
+            context.getResponse().addHeader("Content-Type","application/json");
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
