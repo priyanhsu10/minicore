@@ -42,26 +42,22 @@ public class UseRouteingMiddleware implements IMiddleware {
         }
         context.setRoute(routPath);
         EndPointMetadata e = WebHostBuilder.getEndPointManger().getEndPoint(routPath, context.getRequest().getMethod());
-        if(e ==null){
+        if (e == null) {
             //write not found result
-        return;
+            return;
         }
         context.setEndPointMetadata(e);
         createActionContext(context);
     }
 
     private void createActionContext(HttpContext context) {
-        ActionContext actionContext= new ActionContext();
+        ActionContext actionContext = new ActionContext();
         // set content type
-        actionContext.OutputMediaType = context.getRequest().getHeader("accept");
+        actionContext.OutputMediaType = context.getRequest().getHeader("Accept");
         actionContext.OutputMediaType = actionContext.OutputMediaType == null ? "application/json" : actionContext.OutputMediaType;
 
-        actionContext.InputMediaType = context.getRequest().getHeader("content-type");
+        actionContext.InputMediaType = context.getRequest().getHeader("Content-Type");
         actionContext.InputMediaType = actionContext.InputMediaType == null ? "application/json" : actionContext.InputMediaType;
-
-        actionContext.ModelValueCollector=new DefaultModelValueCollector(context);
-        context.ActionContext=actionContext;
-
-
+        context.ActionContext = actionContext;
     }
 }

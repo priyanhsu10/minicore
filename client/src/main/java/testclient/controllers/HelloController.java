@@ -23,8 +23,8 @@ public class HelloController  extends ControllerBase {
         return this.testService.getlist();
     }
     @Post(path = "/hello")
-    public String post(String name){
-        return "this is post "+name;
+    public Model post(Model model){
+        return model;
     }
     @Put(path = "/helloupdate")
     public String put(String name){

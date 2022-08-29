@@ -5,6 +5,7 @@ import minicore.contracts.HttpContext;
 import minicore.contracts.annotations.filters.ActionFilter;
 import minicore.contracts.annotations.filters.ResultFilter;
 import minicore.contracts.filters.*;
+import minicore.contracts.modelbinding.DefaultModelValueCollector;
 import minicore.contracts.modelbinding.IModelBinder;
 import minicore.contracts.mvc.IMvcHandler;
 import minicore.contracts.results.IActionResult;
@@ -55,7 +56,7 @@ public class MvcHandler implements IMvcHandler {
         //2. controller instantiation
         Object c = HttpContext.services.resolve(context.getEndPointMetadata().ControllerClass);
 
-
+        context.ActionContext.ModelValueCollector=new DefaultModelValueCollector(context);
         try {
             //3.model binding
             binder.bindModel(context);
