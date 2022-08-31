@@ -9,5 +9,6 @@ public interface IModelValueCollector {
     Object getBodyData();
     Map<String, Object> getRouteData();
     Map<String, String> getHeaders();
+    Map<String, String[]> getFormData();
     void  setHttpContext(HttpContext httpContext);
 }

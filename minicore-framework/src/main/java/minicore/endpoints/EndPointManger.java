@@ -2,6 +2,7 @@ package minicore.endpoints;
 
 import minicore.contracts.ControllerBase;
 import minicore.contracts.EndPointMetadata;
+import minicore.contracts.HttpMethod;
 import minicore.contracts.annotations.http.*;
 import minicore.contracts.host.IStartup;
 import minicore.contracts.ioc.IServiceCollection;
@@ -89,21 +90,21 @@ public class EndPointManger {
 
     private void setHttpMethod(Method m, EndPointMetadata endPointMetadata) {
         if (m.isAnnotationPresent(Get.class)) {
-            endPointMetadata.HttpMethod = "GET";
+            endPointMetadata.HttpMethod = HttpMethod.GET;
             endPointMetadata.DisplayName = m.getAnnotation(Get.class).path();
 
 
         } else if (m.isAnnotationPresent(Post.class)) {
-            endPointMetadata.HttpMethod = "POST";
+            endPointMetadata.HttpMethod = HttpMethod.POST;
             endPointMetadata.DisplayName = m.getAnnotation(Post.class).path();
 
 
         } else if (m.isAnnotationPresent(Put.class)) {
-            endPointMetadata.HttpMethod = "PUT";
+            endPointMetadata.HttpMethod = HttpMethod.PUT;
             endPointMetadata.DisplayName = m.getAnnotation(Put.class).path();
 
         } else if (m.isAnnotationPresent(Delete.class)) {
-            endPointMetadata.HttpMethod = "DELETE";
+            endPointMetadata.HttpMethod = HttpMethod.DELETE;
             endPointMetadata.DisplayName = m.getAnnotation(Delete.class).path();
 
 

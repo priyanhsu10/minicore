@@ -4,9 +4,7 @@ package testclient;
 import minicore.contracts.host.IStartup;
 import minicore.contracts.ioc.IServiceCollection;
 import minicore.contracts.pipeline.IApplicationBuilder;
-import minicore.mildlewares.endpointexecuting.EndPointExecutorMiddleware;
 import minicore.mildlewares.exceptions.ExceptionMiddleware;
-import minicore.mildlewares.routemap.UseRouteingMiddleware;
 import testclient.services.ITestService;
 import testclient.services.TestService;
 

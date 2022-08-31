@@ -6,6 +6,7 @@ import minicore.contracts.annotations.http.Delete;
 import minicore.contracts.annotations.http.Get;
 import minicore.contracts.annotations.http.Post;
 import minicore.contracts.annotations.http.Put;
+import minicore.contracts.annotations.modelBinding.FromBody;
 import testclient.services.ITestService;
 import testclient.services.Model;
 
@@ -23,7 +24,7 @@ public class HelloController  extends ControllerBase {
         return this.testService.getlist();
     }
     @Post(path = "/hello")
-    public Model post(Model model){
+    public Model post(@FromBody Model model){
         return model;
     }
     @Put(path = "/helloupdate")

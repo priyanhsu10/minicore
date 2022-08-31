@@ -2,6 +2,7 @@ package minicore.contracts.modelbinding;
 
 import minicore.contracts.EndPointMetadata;
 import minicore.contracts.HttpContext;
+import minicore.contracts.HttpMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -12,8 +13,10 @@ public class DefaultModelValueCollector implements IModelValueCollector {
     private Map<String, Object> queryParameters = new HashMap<>();
     private Object bodyData;
     private Map<String, Object> routeData = new HashMap<>();
+    private Map<String, String[]> formData = new HashMap<>();
     private Map<String, String> headers = new HashMap<>();
     private HttpContext httpContext;
+
 
     public Map<String, Object> getQueryParameters() {
         return queryParameters;
@@ -25,6 +28,9 @@ public class DefaultModelValueCollector implements IModelValueCollector {
 
     public Map<String, Object> getRouteData() {
         return routeData;
+    }
+    public Map<String, String[]> getFormData() {
+        return formData;
     }
 
     public Map<String, String> getHeaders() {
@@ -57,17 +63,12 @@ public class DefaultModelValueCollector implements IModelValueCollector {
             routeData = routeDataBinder(httpContext.getEndPointMetadata(),
                     httpContext.getRoute());
         }
-//        if (method.equals("PUT") || method.equals("POST")) {
-//            try {
-//                bodyData = httpContext.getRequest()
-//                        .getReader()
-//                        .lines()
-//                        .collect(Collectors.joining());
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//        }
+        if(method.equals(HttpMethod.POST )||method.equals( HttpMethod.PUT)){
+       //collect form data
+         this.formData=httpContext.getRequest().getParameterMap();
+
+        }
+
 
     }
 
