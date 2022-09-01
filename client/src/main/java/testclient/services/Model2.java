@@ -15,6 +15,16 @@ public class Model2 {
         this.model = model;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    @FromHeader(Key = "Authorization")
+    private String token;
     @FromBody
     private Model model;
 
