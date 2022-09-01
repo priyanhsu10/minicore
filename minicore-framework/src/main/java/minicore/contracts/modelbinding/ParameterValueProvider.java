@@ -56,11 +56,11 @@ public class ParameterValueProvider {
 
     private void fillDictionary() {
 
-        valueResolverMap.put(isFromBody(), this::valueFromBody);
+        valueResolverMap.put(isFromBody(), this::parameterValueFromBody);
         valueResolverMap.put(isFromForm(), this::valueFromFrom);
 
         valueResolverMap.put(getParameterPredicate(), this::valueFromRoute);
-        valueResolverMap.put(p ->isPrimitiveType(p.getType()) && p.isAnnotationPresent(FromHeader.class), this::valueFromHeader);
+        valueResolverMap.put(p -> isPrimitiveType(p.getType()) && p.isAnnotationPresent(FromHeader.class), this::valueFromHeader);
         valueResolverMap.put(p -> isPrimitiveType(p.getType()) && collector.getQueryParameters().containsKey(p.getName()), this::valueFromQuery);
         valueResolverMap.put(isCustomObjectContainsModelBindingAttr(), this::CustomObjectContainsModelBindingAttr);
         valueResolverMap.put(p -> p.isAnnotationPresent(FromFile.class), this::valueFromFile);
@@ -87,7 +87,7 @@ public class ParameterValueProvider {
     }
 
     public Object valueFromQuery(Parameter p) {
-        return  collector.getQueryParameters().containsKey(p.getName()) ? collector.getQueryParameters().get(p.getName()) : createInstance(p.getType());
+        return collector.getQueryParameters().containsKey(p.getName()) ? collector.getQueryParameters().get(p.getName()) : createInstance(p.getType());
 
     }
 
@@ -116,47 +116,57 @@ public class ParameterValueProvider {
                     !p.isAnnotationPresent(FromQuery.class);
 
 
-            boolean canProcess = isCustomObject && Arrays.stream(p.getType().getDeclaredFields()).anyMatch(f -> f.isAnnotationPresent(FromRoute.class) || p.isAnnotationPresent(FromQuery.class) || p.isAnnotationPresent(FromHeader.class));
+            boolean canProcess = isCustomObject && Arrays.stream(p.getType().getDeclaredFields()).anyMatch(f ->
+                    f.isAnnotationPresent(FromRoute.class) || f.isAnnotationPresent(FromQuery.class) ||
+                            f.isAnnotationPresent(FromHeader.class) ||
+                            f.isAnnotationPresent(FromBody.class));
 
             return canProcess;
 
         };
 
     }
+
     private Object CustomObjectContainsModelBindingAttr(Parameter p) {
 
-            try {
-                Object parameter = createInstance(p.getType());
-                for (Field f : p.getType().getDeclaredFields()) {
-                    f.setAccessible(true);
+        try {
+            Object parameter = createInstance(p.getType());
+            for (Field f : p.getType().getDeclaredFields()) {
+                f.setAccessible(true);
 
-                    if(f.isAnnotationPresent(FromHeader.class) && collector.getHeaders().containsKey(f.getName())){
-                        f.set(parameter,collector.getHeaders().get(f.getName()));
-                        continue;
-                    }
-                    if(f.isAnnotationPresent(FromQuery.class) && collector.getQueryParameters().containsKey(f.getName())){
-                        f.set(parameter,collector.getQueryParameters().get(f.getName()));
-                        continue;
-                    }
-                    if(f.isAnnotationPresent(FromRoute.class) && collector.getRouteData().containsKey(f.getName())){
-                        f.set(parameter,collector.getRouteData().get(f.getName()));
-                        continue;
-                    }
-                    if(f.isAnnotationPresent(FromBody.class) && isPutOrPost() && !isPrimitiveType(f.getType())){
-
-                        f.set(parameter,valueFromBody(p));
-                        continue;
-                    }
-
-
+                if (f.isAnnotationPresent(FromHeader.class) && collector.getHeaders().containsKey(f.getName())) {
+                    f.set(parameter, collector.getHeaders().get(f.getName()));
+                    continue;
                 }
-                return parameter;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                if (f.isAnnotationPresent(FromQuery.class) && collector.getQueryParameters().containsKey(f.getName())) {
+                    f.set(parameter, collector.getQueryParameters().get(f.getName()));
+                    continue;
+                }
+                if (f.isAnnotationPresent(FromRoute.class) && collector.getRouteData().containsKey(f.getName())) {
+                    f.set(parameter, collector.getRouteData().get(f.getName()));
+                    continue;
+                }
+                if (f.isAnnotationPresent(FromBody.class) && isPutOrPost() && !isPrimitiveType(f.getType())) {
+
+                    f.set(parameter, valueFromBody(f.getType()));
+                    continue;
+                }
+
+
             }
+            return parameter;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
     }
-    public Object valueFromBody(Parameter p) {
+
+    public Object parameterValueFromBody(Parameter p) {
+
+        return valueFromBody(p.getType());
+    }
+
+    public Object valueFromBody(Class<?> p) {
 
 
         //validate accept header and check support for
@@ -167,7 +177,7 @@ public class ParameterValueProvider {
         // select supported input formatter
         IInputFormatter formatter = provider.getSuportedInputFormatter(httpContext.ActionContext.InputMediaType);
 
-        Object body = formatter.format(httpContext, p.getType());
+        Object body = formatter.format(httpContext, p);
         return body;
     }
 
@@ -217,7 +227,7 @@ public class ParameterValueProvider {
     }
 
     public Object valueFromHeader(Parameter p) {
-        return collector.getHeaders().containsKey(p.getName()) ? collector.getHeaders().get(p.getName()) : createInstance(p.getType());
+        return collector.getHeaders().containsKey(p.getName()) ? collector.getHeaders().get(p.getAnnotation(FromHeader.class).Key()) : createInstance(p.getType());
     }
 
     public static boolean isPrimitiveType(Class<?> parameterType) {
