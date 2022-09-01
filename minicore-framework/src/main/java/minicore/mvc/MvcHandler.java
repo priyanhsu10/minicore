@@ -56,8 +56,6 @@ public class MvcHandler implements IMvcHandler {
 
         //2. controller instantiation
         Object c = HttpContext.services.resolve(httpContext.getEndPointMetadata().ControllerClass);
-
-        httpContext.ActionContext.ModelValueCollector=new DefaultModelValueCollector(httpContext);
         try {
             //3.model binding
 

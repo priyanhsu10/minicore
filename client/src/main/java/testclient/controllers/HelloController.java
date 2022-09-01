@@ -9,6 +9,7 @@ import minicore.contracts.annotations.http.Put;
 import minicore.contracts.annotations.modelBinding.FromBody;
 import testclient.services.ITestService;
 import testclient.services.Model;
+import testclient.services.Model2;
 
 import java.util.List;
 
@@ -26,6 +27,10 @@ public class HelloController  extends ControllerBase {
     @Post(path = "/hello")
     public Model post(@FromBody Model model){
         return model;
+    }
+    @Post(path = "/hello/m2")
+    public Model post( Model2 model){
+        return model.getModel();
     }
     @Put(path = "/helloupdate")
     public String put(String name){
