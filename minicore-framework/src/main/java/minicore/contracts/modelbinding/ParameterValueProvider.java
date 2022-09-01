@@ -134,8 +134,8 @@ public class ParameterValueProvider {
             for (Field f : p.getType().getDeclaredFields()) {
                 f.setAccessible(true);
 
-                if (f.isAnnotationPresent(FromHeader.class) && collector.getHeaders().containsKey(f.getName())) {
-                    f.set(parameter, collector.getHeaders().get(f.getName()));
+                if (f.isAnnotationPresent(FromHeader.class) ) {
+                    f.set(parameter, collector.getHeaders().get(f.getAnnotation(FromHeader.class).Key()));
                     continue;
                 }
                 if (f.isAnnotationPresent(FromQuery.class) && collector.getQueryParameters().containsKey(f.getName())) {
