@@ -58,7 +58,7 @@ public class MvcHandler implements IMvcHandler {
 
         //2. controller instantiation
         Object c = HttpContext.services.resolve(httpContext.getEndPointMetadata().ControllerClass);
-        ((ControllerBase)c).httpContext=httpContext;
+        ((ControllerBase) c).httpContext = httpContext;
         try {
             //3.model binding
 
@@ -93,7 +93,7 @@ public class MvcHandler implements IMvcHandler {
             }
             //
         } catch (Exception e) {
-      //unhandled exceptions
+            //unhandled exceptions
             throw e;
         }
 
@@ -104,8 +104,9 @@ public class MvcHandler implements IMvcHandler {
 
         try {
             Object result = context.getEndPointMetadata().ActionMethod.invoke(controller, context.ActionContext.MethodParameters);
-
-            if (result.getClass().isAssignableFrom(IActionResult.class)) {
+            if (result == null) {
+                return new ObjectResult(null);
+            }else if (result.getClass().isAssignableFrom(IActionResult.class)) {
                 return (IActionResult) result;
             } else {
                 return new ObjectResult(result);
@@ -178,7 +179,7 @@ public class MvcHandler implements IMvcHandler {
     private List<IActionFilter> getFilters(Stream<Annotation> annotationStream) {
         return annotationStream
                 .filter(x -> x.annotationType().equals(ActionFilter.class))
-                .map(y -> ((ActionFilter)y).filterClass())
+                .map(y -> ((ActionFilter) y).filterClass())
                 .map(x -> HttpContext.services.tryResolve(x, Scope.Singleton))
                 .collect(Collectors.toList());
     }
@@ -186,7 +187,7 @@ public class MvcHandler implements IMvcHandler {
     private List<IResultExecutionFilter> getResultFilters(HttpContext context) {
         return Arrays.stream(context.getEndPointMetadata().ActionMethod.getDeclaredAnnotations())
                 .filter(x -> x.annotationType().equals(ResultFilter.class))
-                .map(y -> ((ResultFilter)y).filterClass())
+                .map(y -> ((ResultFilter) y).filterClass())
                 .map(x -> HttpContext.services.tryResolve(x, Scope.Singleton))
                 .collect(Collectors.toList());
     }
