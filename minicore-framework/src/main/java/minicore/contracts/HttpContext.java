@@ -16,7 +16,6 @@ public class HttpContext {
     private HttpServletRequest request;
     private HttpServletResponse response;
     private EndPointMetadata endPointMetadata;
-//    private IActionResult actionResult;
     public  static IServiceCollection services;
 
     public String getRoute() {

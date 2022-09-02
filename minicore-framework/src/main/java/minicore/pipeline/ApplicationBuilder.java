@@ -26,6 +26,11 @@ public class ApplicationBuilder implements IApplicationBuilder {
     public ApplicationBuilder(IServiceCollection serviceCollection) {
         this.serviceCollection = serviceCollection;
         middlewareTypes=new ArrayList<>();
+        addInitialMiddlewares();
+    }
+
+    private void addInitialMiddlewares() {
+        use(ExceptionMiddleware.class);
     }
 
     private List<Class<? extends IMiddleware>> middlewareTypes;

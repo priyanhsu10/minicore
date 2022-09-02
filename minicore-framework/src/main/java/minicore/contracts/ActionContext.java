@@ -11,7 +11,8 @@ public class ActionContext {
     public Object[] MethodParameters;
     public Object Body;
     public  IModelValueCollector ModelValueCollector;
+    public RuntimeException ActionException;
 
 
-
+    public boolean IsActionRaiseException;
 }

@@ -1,6 +1,7 @@
 package minicore.mvc;
 
 import minicore.contracts.ActionContext;
+import minicore.contracts.ControllerBase;
 import minicore.contracts.HttpContext;
 import minicore.contracts.annotations.filters.ActionFilter;
 import minicore.contracts.annotations.filters.ResultFilter;
@@ -11,6 +12,7 @@ import minicore.contracts.mvc.IMvcHandler;
 import minicore.contracts.results.IActionResult;
 import minicore.contracts.results.IResultExectutor;
 import minicore.contracts.results.ObjectResult;
+import minicore.ioc.container.Scope;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -56,6 +58,7 @@ public class MvcHandler implements IMvcHandler {
 
         //2. controller instantiation
         Object c = HttpContext.services.resolve(httpContext.getEndPointMetadata().ControllerClass);
+        ((ControllerBase)c).httpContext=httpContext;
         try {
             //3.model binding
 
@@ -68,25 +71,35 @@ public class MvcHandler implements IMvcHandler {
             if (isResultSet.get()) return;
 
             //7. execute action ()
-            httpContext.ActionContext.ActionResult=executeAction(httpContext,c);
+
+            try {
+                httpContext.ActionContext.ActionResult = executeAction(httpContext, c);
+
+            } catch (RuntimeException e) {
+                //set exception on action context
+                httpContext.ActionContext.IsActionRaiseException = true;
+                httpContext.ActionContext.ActionException = e;
+            }
             // 6. execute after action filter
             //5.execute controller after action filter
             // 4.execute after action global filter
+            //if action method throws exception then after exception filter not be e
             executeFilterAfterActionExecuted(httpContext);
-
             //execute  result
             resultExectutor.executeResult(httpContext, getResultFilters(httpContext));
 
+            if (httpContext.ActionContext.IsActionRaiseException) {
+                executeExceptionFilters(httpContext, httpContext.ActionContext.ActionException);
+            }
             //
-        } catch (RuntimeException e) {
-
-            // execute exception filters
-
-            executeExceptionFilters(httpContext, e);
+        } catch (Exception e) {
+      //unhandled exceptions
+            throw e;
         }
 
 
     }
+
     public IActionResult executeAction(HttpContext context, Object controller) throws RuntimeException {
 
         try {
@@ -103,22 +116,23 @@ public class MvcHandler implements IMvcHandler {
             throw exception;
         }
     }
+
     private void executeExceptionFilters(HttpContext context, RuntimeException e) {
-        boolean isHanlle=false;
+        boolean isHanlle = false;
         for (int i = 0; i < exceptionFilters.size(); i++) {
             if (exceptionFilters.get(i).support(e.getClass())) {
                 exceptionFilters.get(i).onException(context, e);
-                isHanlle=true;
+                isHanlle = true;
                 break;
             }
         }
-        if(!isHanlle){
-            throw  e;
+        if (!isHanlle) {
+            throw e;
         }
     }
 
     private void executeFilterAfterActionExecuted(HttpContext context) {
-        for (int i = actionFilters.size() - 1; i >= 0; i++) {
+        for (int i = actionFilters.size() - 1; i >= 0; i--) {
 
             actionFilters.get(i).afterExecute(context);
 
@@ -163,17 +177,17 @@ public class MvcHandler implements IMvcHandler {
 
     private List<IActionFilter> getFilters(Stream<Annotation> annotationStream) {
         return annotationStream
-                .filter(x -> x.annotationType().isAnnotationPresent(ActionFilter.class))
-                .map(x -> x.annotationType().getAnnotation(ActionFilter.class).filterClass())
-                .map(x -> HttpContext.services.resolve(x))
+                .filter(x -> x.annotationType().equals(ActionFilter.class))
+                .map(y -> ((ActionFilter)y).filterClass())
+                .map(x -> HttpContext.services.tryResolve(x, Scope.Singleton))
                 .collect(Collectors.toList());
     }
 
     private List<IResultExecutionFilter> getResultFilters(HttpContext context) {
         return Arrays.stream(context.getEndPointMetadata().ActionMethod.getDeclaredAnnotations())
-                .filter(x -> x.annotationType().isAnnotationPresent(ResultFilter.class))
-                .map(x -> x.annotationType().getAnnotation(ResultFilter.class).filterClass())
-                .map(x -> HttpContext.services.resolve(x))
+                .filter(x -> x.annotationType().equals(ResultFilter.class))
+                .map(y -> ((ResultFilter)y).filterClass())
+                .map(x -> HttpContext.services.tryResolve(x, Scope.Singleton))
                 .collect(Collectors.toList());
     }
 

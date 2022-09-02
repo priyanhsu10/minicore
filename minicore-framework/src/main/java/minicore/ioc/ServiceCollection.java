@@ -34,9 +34,13 @@ public class ServiceCollection implements IServiceCollection {
     }
 
     public <T> T resolve(Class<T> source) {
+
         return container.resolve(source);
     }
-
+    //try to resolve if type is not register then it register and then resolve
+    public <T> T tryResolve(Class<T> source,Scope scope) {
+        return container.tryResolve(source,scope);
+    }
 
     @Override
     public <TSource> void register(Class<TSource> source, Scope scope) {
