@@ -54,6 +54,22 @@ public class AppContainer {
 
 
     }
+    //try to resove if type is not register then it register and then resolve
+    public <T> T tryResolve(Class<T> source ,Scope scope) {
+        if (tank.containsKey(source)) {
+            Descriptor descriptor = tank.get(source);
+            return source.cast(createInstance(source, descriptor));
+        } else if (singletonTank.containsKey(source)) {
+            return source.cast(singletonTank.get(source));
+        } else if (scopeTank.containsKey(source)) {
+            return source.cast(scopeTank.get(source));
+        } else {
+            register(new Descriptor(source,source,scope));
+           return resolve(source);
+        }
+
+
+    }
 
     public Object createInstance(Class source, Descriptor descriptor) {
         boolean isSingleton = descriptor.getScope().equals(Scope.Singleton);

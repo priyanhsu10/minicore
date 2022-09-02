@@ -5,13 +5,16 @@ import minicore.contracts.IAction;
 import minicore.contracts.IActionDelegate;
 import minicore.contracts.IMiddleware;
 import minicore.json.JsonHelper;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
 
 public class ExceptionMiddleware implements IMiddleware {
-    public ExceptionMiddleware(){
-
+    private Logger logger;
+    public ExceptionMiddleware(ILoggerFactory iLoggerFactory){
+        logger= iLoggerFactory.getLogger("ExceptionMiddleware");
     }
     private  IActionDelegate action;
 
@@ -25,6 +28,7 @@ public class ExceptionMiddleware implements IMiddleware {
         try {
             action.invoke(httpContext);
         } catch (Exception exception) {
+            logger.error(exception.getLocalizedMessage(),exception);
             Error e = new Error();
 
             e.setMessage(exception.getLocalizedMessage());
