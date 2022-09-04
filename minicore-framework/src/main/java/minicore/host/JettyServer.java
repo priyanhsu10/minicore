@@ -19,7 +19,7 @@ public class JettyServer implements IServer {
                 EnumSet.of(DispatcherType.REQUEST));
         server.setHandler(servletHandler);
         ServerConnector connector = new ServerConnector(server);
-        connector.setPort(8090);
+        connector.setPort(Integer.parseInt(System.getProperty("appPort")));
         server.setConnectors(new Connector[] {connector});
         try {
             server.start();
