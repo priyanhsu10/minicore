@@ -1,5 +1,6 @@
 package minicore.mvc;
 
+import minicore.configuration.AppConfigurer;
 import minicore.contracts.HttpContext;
 import minicore.contracts.filters.IFilterProvider;
 import minicore.contracts.formaters.IFormatProvider;
@@ -36,6 +37,7 @@ public  class MveHelper {
     }
 
     private static void registerMvcServices(IServiceCollection iServiceCollection) {
+        iServiceCollection.addSingleton(AppConfigurer.class,AppConfigurer.class);
         iServiceCollection.addSingleton(MvcConfigurer.class,MvcConfigurer.class);
         iServiceCollection.addSingleton(IModelBinder.class, DefaultModelBinder.class);
         iServiceCollection.addSingleton(IFilterProvider.class, FilterProvider.class);

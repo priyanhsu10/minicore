@@ -1,5 +1,9 @@
 package minicore.host;
 
+import minicore.configuration.AppConfigurer;
+import minicore.configuration.ConfigurationReader;
+import minicore.configuration.IAppConfigure;
+import minicore.configuration.SystemConfig;
 import minicore.contracts.IActionDelegate;
 import minicore.contracts.host.IHostBuilder;
 import minicore.contracts.host.IServer;
@@ -22,6 +26,8 @@ public class WebHostBuilder implements IHostBuilder {
     private static IServiceCollection serviceCollection;
     private  static IPipelineBuilder pipelineBuilder;
     private  static IApplicationBuilder applicationBuilder;
+    private final String[] args;
+    private  ConfigurationReader reader= new ConfigurationReader();
     public static IActionDelegate getAction() {
         return action;
     }
@@ -36,6 +42,7 @@ public class WebHostBuilder implements IHostBuilder {
     }
     private  WebHostBuilder(String[] args){
 
+        this.args = args;
     }
 
     public static IPipelineBuilder getPipelineBuilder() {
@@ -55,6 +62,7 @@ public class WebHostBuilder implements IHostBuilder {
     public IHostBuilder useStartup(Class<? extends IStartup> startup) {
 
         try {
+
             Class startupClass = Class.forName(startup.getTypeName());
             serviceCollection=new ServiceCollection();
             
@@ -84,10 +92,15 @@ public class WebHostBuilder implements IHostBuilder {
 
         public void useStartup(Class<? extends IStartup> startupClass, IServiceCollection iServiceCollection) throws Exception {
         IStartup startup = (IStartup) startupClass.getDeclaredConstructor().newInstance();
+        //set IConfiguraiton object
+           // startup.Conifiguration
+
             logger.info("register initial service pipeline");
             MveHelper.RegisterServices(iServiceCollection);
             MveHelper.Configure(iServiceCollection);
-           startup.configureServices(iServiceCollection);
+            //property configuration
+           reader.LoadConfiguration(args);
+            startup.configureServices(iServiceCollection);
 
            logger.info("configure pipeline");
            startup.configure(applicationBuilder);
@@ -95,7 +108,12 @@ public class WebHostBuilder implements IHostBuilder {
     }
 
 
+ public WebHostBuilder ConfigureHost(IAppConfigure appConfigure){
 
+       appConfigure.configure(AppConfigurer.getInstance());
+
+        return  this;
+ }
 
 
     public  static WebHostBuilder build(String[] args){
