@@ -4,10 +4,15 @@ import java.util.Properties;
 
 public class AppConfiguration implements IConfiguration{
 
-   public static final Properties properties= new Properties();
 
     @Override
-    public <T> T getValue(T t, String key) {
-        return null;
+    public <T> T getValue(Class<T> t, String key) {
+        return (T) t.cast( System.getProperty(key));
     }
+
+    @Override
+    public String getValue(String key) {
+        return System.getProperty(key);
+    }
+
 }

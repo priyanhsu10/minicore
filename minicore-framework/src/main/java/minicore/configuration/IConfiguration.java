@@ -1,6 +1,7 @@
 package minicore.configuration;
 
 public interface IConfiguration {
-    <T> T getValue(T t,String key);
+    <T> T getValue(Class<T> type,String key);
+    String getValue(String key);
 
 }
