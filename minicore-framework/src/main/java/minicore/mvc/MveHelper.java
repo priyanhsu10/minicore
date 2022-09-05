@@ -1,6 +1,8 @@
 package minicore.mvc;
 
+import minicore.configuration.AppConfiguration;
 import minicore.configuration.AppConfigurer;
+import minicore.configuration.IConfiguration;
 import minicore.contracts.HttpContext;
 import minicore.contracts.filters.IFilterProvider;
 import minicore.contracts.formaters.IFormatProvider;
@@ -33,6 +35,7 @@ public  class MveHelper {
         iServiceCollection.addSingleton(ILoggerFactory.class, ()-> LoggerFactory.getILoggerFactory());
 //        iServiceCollection.addTransient(Logger.class, ()-> LoggerFactory.getILoggerFactory().getLogger());
         //wherever resolver needed in the pipeline it is present
+        iServiceCollection.addSingleton(IConfiguration.class, AppConfiguration.class);
         HttpContext.services= iServiceCollection;
     }
 
@@ -44,6 +47,7 @@ public  class MveHelper {
         iServiceCollection.addSingleton(IResultExectutor.class, ResultExecutor.class);
         iServiceCollection.addSingleton(IFormatProvider.class, FormatProvider.class);
         iServiceCollection.addTransient(IMvcHandler.class, MvcHandler.class);
+
     }
 
     public static void Configure(IServiceCollection services) {

@@ -1,6 +1,7 @@
 package testclient.controllers;
 
 
+import minicore.configuration.IConfiguration;
 import minicore.contracts.ControllerBase;
 import minicore.contracts.annotations.filters.ActionFilter;
 import minicore.contracts.annotations.filters.ResultFilter;
@@ -21,9 +22,11 @@ import java.util.stream.Collectors;
 @ActionFilter(filterClass = TestActionFilter2.class)
 public class HelloController  extends ControllerBase {
     private ITestService testService;
+    private final IConfiguration iConfiguration;
 
-    public HelloController(ITestService testService) {
+    public HelloController(ITestService testService, IConfiguration iConfiguration) {
         this.testService = testService;
+        this.iConfiguration = iConfiguration;
     }
 
     @Get
@@ -31,6 +34,8 @@ public class HelloController  extends ControllerBase {
     //apply custom filter for specific action
     @ResultFilter(filterClass = CustomResultFilter.class)
     public List<Model> get() {
+      Integer value=  iConfiguration.getValue(Integer.class,"age");
+        System.out.println("value from Conguraton age:"+value);
         //accesing transaiton id which is added by transactionIdMiddlware
         System.out.println(httpContext.getData().get("trazId"));
         return this.testService.getlist();

@@ -13,6 +13,7 @@ import minicore.contracts.results.IActionResult;
 import minicore.contracts.results.IResultExectutor;
 import minicore.contracts.results.ObjectResult;
 import minicore.ioc.container.Scope;
+import minicore.mildlewares.exceptions.ExceptionResult;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -79,6 +80,7 @@ public class MvcHandler implements IMvcHandler {
                 //set exception on action context
                 httpContext.ActionContext.IsActionRaiseException = true;
                 httpContext.ActionContext.ActionException = e;
+                this.executeExceptionFilters(httpContext, e);
             }
             // 6. execute after action filter
             //5.execute controller after action filter
@@ -88,9 +90,9 @@ public class MvcHandler implements IMvcHandler {
             //execute  result
             resultExectutor.executeResult(httpContext, getResultFilters(httpContext));
 
-            if (httpContext.ActionContext.IsActionRaiseException) {
-                executeExceptionFilters(httpContext, httpContext.ActionContext.ActionException);
-            }
+//            if (httpContext.ActionContext.IsActionRaiseException) {
+//                executeExceptionFilters(httpContext, httpContext.ActionContext.ActionException);
+//            }
             //
         } catch (Exception e) {
             //unhandled exceptions
