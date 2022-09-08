@@ -6,7 +6,9 @@ import minicore.contracts.mvc.MvcConfigurer;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
+import java.util.InvalidPropertiesFormatException;
 import java.util.Map;
 import java.util.Properties;
 
@@ -31,23 +33,30 @@ public class AppConfigurer {
         this.customProperties = new HashMap<>();
     }
 
-    public void addJsonFile(String filePath) {
+    public void addJsonFile(String filePath) throws IOException {
+        URL resource = SystemConfig.class.getClassLoader().getResource(filePath);
 
+        ICustomConfigurer jsonConfigurer=  new JsonConfigParser(resource.getPath());
+        this.customProperties.putAll(jsonConfigurer.custom());
         // read and put in custom properties
     }
 
-    public void addXmlFile(String filePath) {
-        // read and put in custom properties
+    public void addXmlFile(String filePath) throws IOException {
+        if(!filePath.endsWith("xml")){
+            throw new InvalidPropertiesFormatException(filePath);
+        }
+        URL resource = SystemConfig.class.getClassLoader().getResource(filePath);
+        this.customProperties.putAll(readConfigFromXml(resource.getPath()));
     }
 
-    public void custom(IServiceCollection serviceCollection, ICustomConfigurer custom) {
-        Map<String, Object> customObject = custom.custom(serviceCollection);
+    public void custom(ICustomConfigurer custom) throws IOException {
+        Map<String, Object> customObject = custom.custom();
         this.customProperties.putAll(customObject);
     }
 
     public void addPropertyFile(String filePath) {
-
-        this.customProperties.putAll(readConfig(filePath));
+        URL resource = SystemConfig.class.getClassLoader().getResource(filePath);
+        this.customProperties.putAll(readConfig(resource.getPath()));
     }
 
     public static void Configure(IAppConfigure appConfigure) {
@@ -58,9 +67,25 @@ public class AppConfigurer {
 
     private Map<Object, Object> readConfig(String filename) {
         Properties p = new Properties();
-        try (FileInputStream f = (FileInputStream) ConfigurationReader.class.getClassLoader().getResourceAsStream(SystemConfig.class.getClassLoader().getResource(filename).getPath())) {
+        try (FileInputStream f = (FileInputStream) ConfigurationReader.class.getClassLoader().getResourceAsStream(filename)) {
 
             p.load(f);
+
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getLocalizedMessage());
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.out.println(e.getLocalizedMessage());
+            e.printStackTrace();
+        }
+        return p;
+
+    }
+    private Map<Object, Object> readConfigFromXml(String filename) {
+        Properties p = new Properties();
+        try (FileInputStream f = (FileInputStream) ConfigurationReader.class.getClassLoader().getResourceAsStream(filename)) {
+
+            p.loadFromXML(f);
 
         } catch (FileNotFoundException e) {
             System.out.println(e.getLocalizedMessage());

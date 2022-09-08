@@ -13,7 +13,7 @@ public class PropertyConfigParser  implements ICustomConfigurer {
     }
 
     @Override
-    public Map<String, Object> custom(IServiceCollection service) {
+    public Map<String, Object> custom() {
 
         return null;
     }

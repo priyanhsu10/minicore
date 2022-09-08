@@ -33,7 +33,6 @@ public class ConfigurationReader {
 
         // custom configuration extension
         properties.putAll(AppConfigurer.getInstance().getCustomProperties());
-
         // read enviorment variables
         properties.putAll(System.getenv());
 

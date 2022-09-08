@@ -12,8 +12,11 @@ import minicore.contracts.mvc.IMvcHandler;
 import minicore.contracts.results.IActionResult;
 import minicore.contracts.results.IResultExectutor;
 import minicore.contracts.results.ObjectResult;
+import minicore.host.AppFilter;
 import minicore.ioc.container.Scope;
 import minicore.mildlewares.exceptions.ExceptionResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -34,7 +37,7 @@ public class MvcHandler implements IMvcHandler {
     private List<IResultExecutionFilter> resultFilters = new ArrayList<>();
     private final List<IAuthenticationFilter> authFilters;
     private final List<IExceptionFilter> exceptionFilters;
-
+    public  static Logger logger= LoggerFactory.getLogger(MvcHandler.class);
     public MvcHandler(IModelBinder binder, IFilterProvider iFilterProvider, IResultExectutor resultExectutor) {
 
 
@@ -47,7 +50,7 @@ public class MvcHandler implements IMvcHandler {
     }
 
     @Override
-    public void process(HttpContext httpContext) {
+    public void process(HttpContext httpContext) throws Exception {
         prepareActionFilters(httpContext);
         Supplier<Boolean> isResultSet = () -> (httpContext.ActionContext.ActionResult != null);
         //1 . execute  authFilter
@@ -96,13 +99,14 @@ public class MvcHandler implements IMvcHandler {
             //
         } catch (Exception e) {
             //unhandled exceptions
+            logger.error(e.getMessage(),e);
             throw e;
         }
 
 
     }
 
-    public IActionResult executeAction(HttpContext context, Object controller) throws RuntimeException {
+    public IActionResult executeAction(HttpContext context, Object controller) throws Exception {
 
         try {
             Object result = context.getEndPointMetadata().ActionMethod.invoke(controller, context.ActionContext.MethodParameters);
@@ -113,10 +117,9 @@ public class MvcHandler implements IMvcHandler {
             } else {
                 return new ObjectResult(result);
             }
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        } catch (RuntimeException exception) {
-            throw exception;
+        } catch (Exception e) {
+            logger.error(e.getMessage(),e);
+            throw e;
         }
     }
 
