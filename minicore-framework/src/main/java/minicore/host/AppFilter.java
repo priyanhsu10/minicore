@@ -1,15 +1,17 @@
 package minicore.host;
 
 import minicore.contracts.HttpContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.*;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
 public class AppFilter implements Filter {
+    public  static Logger logger= LoggerFactory.getLogger(AppFilter.class);
 
     @Override
-
     public void init(FilterConfig filterConfig) {
 
         System.out.println("filter init");
@@ -23,7 +25,7 @@ public class AppFilter implements Filter {
             WebHostBuilder.getServiceCollection().clearRequestObjects();
 
         } catch (Exception e) {
-            throw  new RuntimeException(e);
+            logger.error(e.getMessage(),e);
         }
     }
 
