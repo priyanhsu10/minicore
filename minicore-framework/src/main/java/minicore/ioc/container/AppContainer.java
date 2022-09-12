@@ -3,10 +3,7 @@ package minicore.ioc.container;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Optional;
+import java.util.*;
 
 public class AppContainer {
     public final HashMap<Class, Descriptor> tank = new HashMap<>();
@@ -43,7 +40,7 @@ public class AppContainer {
     public <T> T resolve(Class<T> source) {
         if (tank.containsKey(source)) {
             Descriptor descriptor = tank.get(source);
-            return source.cast(createInstance(source, descriptor));
+            return source.cast(createInstance(new IocType(source), descriptor));
         } else if (singletonTank.containsKey(source)) {
             return source.cast(singletonTank.get(source));
         } else if (scopeTank.containsKey(source)) {
@@ -54,11 +51,64 @@ public class AppContainer {
 
 
     }
+    private  Object resolveInternal(IocType iocType) {
+
+        if (tank.containsKey(iocType.source)) {
+            Descriptor descriptor = tank.get(iocType.source);
+            if(iocType.checkSourceInParent()){
+            String smessage=   getCyclicDependencyMessage(iocType.Parents,descriptor.getImplementer());
+                String message= "Cyclic dependency identified while resolving :" +iocType.source.toString() ;
+                message+="\n"+smessage;
+                System.out.println(message);
+                throw  new RuntimeException(message);
+            }
+
+            return iocType.source.cast(createInstance(iocType, descriptor));
+        } else if (singletonTank.containsKey(iocType.source)) {
+            return iocType.source.cast(singletonTank.get(iocType.source));
+        } else if (scopeTank.containsKey(iocType.source)) {
+            return iocType.source.cast(scopeTank.get(iocType.source));
+        } else {
+            throw new RuntimeException("Type Not register in container");
+        }
+    }
+
+    private String getCyclicDependencyMessage(List<Class<?>> visited, Class<?> implementer) {
+
+        String dasshes="-------->";
+
+        String  result="";
+        int counter=1;
+
+        for (Class<?>c:visited) {
+            result+= c.getName()+"\n" ;
+            result+=dasshes+"\n" ;
+           result+=addspace(counter);
+           counter++;
+        }
+        //A
+        // ----->
+        //        B------->
+        //                   C
+        result+="\n"+implementer.getName();
+        return result;
+    }
+
+    private String addspace(int counter) {
+        String s="";
+        String space="        ";
+        for(int i=1;i<=counter;i++){
+            s+=space;
+        }
+        return s +"\n" ;
+    }
+
     //try to resove if type is not register then it register and then resolve
     public <T> T tryResolve(Class<T> source ,Scope scope) {
         if (tank.containsKey(source)) {
             Descriptor descriptor = tank.get(source);
-            return source.cast(createInstance(source, descriptor));
+            List<Class<?>> Visited=new ArrayList<>();
+            return source.cast(createInstance(new IocType(source), descriptor));
         } else if (singletonTank.containsKey(source)) {
             return source.cast(singletonTank.get(source));
         } else if (scopeTank.containsKey(source)) {
@@ -71,14 +121,14 @@ public class AppContainer {
 
     }
 
-    public Object createInstance(Class source, Descriptor descriptor) {
+    public Object createInstance(IocType iocType, Descriptor descriptor) {
         boolean isSingleton = descriptor.getScope().equals(Scope.Singleton);
         boolean isScope = descriptor.getScope().equals(Scope.RequestScope);
-        if (isScope && scopeTank.containsKey(source)) {
-            return scopeTank.get(source);
+        if (isScope && scopeTank.containsKey(iocType.source)) {
+            return scopeTank.get(iocType.source);
         }
-        if (isSingleton && singletonTank.containsKey(source)) {
-            return singletonTank.get(source);
+        if (isSingleton && singletonTank.containsKey(iocType.source)) {
+            return singletonTank.get(iocType.source);
         }
         Optional<Constructor<?>> constructor = Arrays.stream(descriptor.getImplementer().getConstructors())
                 .max(Comparator.comparingInt(Constructor::getParameterCount));
@@ -92,26 +142,31 @@ public class AppContainer {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-            if (isSingleton && !singletonTank.containsKey(source)) {
-                singletonTank.put(source, o);
+            if (isSingleton && !singletonTank.containsKey(iocType.source)) {
+                singletonTank.put(iocType.source, o);
             }
-            if (isScope && !scopeTank.containsKey(source)) {
-                scopeTank.put(source, o);
+            if (isScope && !scopeTank.containsKey(iocType.source)) {
+                scopeTank.put(iocType.source, o);
             }
             return o;
         }
         Class[] typeParameters = constructor.get().getParameterTypes();
-        Object[] parameters = Arrays.stream(typeParameters).map(y -> resolve(y)).toArray();
-
+        Object[] parameters = Arrays.stream(typeParameters).map(y -> {
+                    List<Class<?>> parents =new ArrayList<>();
+                    parents.addAll(iocType.Parents);
+                    parents.add(iocType.source);
+                    return resolveInternal(new IocType(y, parents));
+                }
+            ).toArray();
         try {
             Object o = descriptor.getImplementer()
                     .getConstructor(typeParameters)
                     .newInstance(parameters);
-            if (isSingleton && !singletonTank.containsKey(source)) {
-                singletonTank.put(source, o);
+            if (isSingleton && !singletonTank.containsKey(iocType.source)) {
+                singletonTank.put(iocType.source, o);
             }
-            if (isScope && !scopeTank.containsKey(source)) {
-                scopeTank.put(source, o);
+            if (isScope && !scopeTank.containsKey(iocType.source)) {
+                scopeTank.put(iocType.source, o);
             }
             return o;
         } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {

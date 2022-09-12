@@ -7,6 +7,11 @@ import java.util.stream.Collectors;
 
 public class TestService implements ITestService {
     public final static Map<Integer, Model> modelList = new LinkedHashMap<>();
+    private final ITest2 iTest2;
+
+    public TestService(ITest2 iTest2) {
+        this.iTest2 = iTest2;
+    }
 
     @Override
     public Model getById(int id) {

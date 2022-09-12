@@ -10,8 +10,7 @@ import testclient.filters.TestGlobalActionFilter;
 import testclient.filters.TestResultFilter;
 import testclient.middlewares.CustomMiddleware;
 import testclient.middlewares.TransactionIdMiddleware;
-import testclient.services.ITestService;
-import testclient.services.TestService;
+import testclient.services.*;
 
 public class AppStartup implements IStartup {
 
@@ -31,6 +30,8 @@ public class AppStartup implements IStartup {
 
         });
         service.addSingleton(ITestService.class, TestService.class);
+        service.addSingleton(ITest2.class, Test2.class);
+        service.addSingleton(ITest3.class, Test3.class);
 
     }
 
