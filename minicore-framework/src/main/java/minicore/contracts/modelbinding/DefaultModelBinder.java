@@ -2,28 +2,36 @@ package minicore.contracts.modelbinding;
 
 import minicore.contracts.HttpContext;
 import minicore.contracts.formaters.IFormatProvider;
-import minicore.contracts.formaters.IInputFormatter;
-import minicore.mvc.filters.MvcException;
+import minicore.contracts.results.HttpStatus;
+import minicore.contracts.results.ModelValidationResult;
+import org.hibernate.validator.HibernateValidator;
 
-import java.io.IOException;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class DefaultModelBinder implements IModelBinder {
     private final IFormatProvider provider;
+    private final Validator validator;
 
     public DefaultModelBinder(IFormatProvider provider) {
         this.provider = provider;
+         validator = Validation.byProvider( HibernateValidator.class )
+                .configure()
+                .failFast( false )
+                .buildValidatorFactory()
+                .getValidator();
+
     }
 
     @Override
     public void bindModel(HttpContext context) {
         context.ActionContext.MethodParameters = resolveParameter(context);
+
     }
 
     private Object[] resolveParameter(HttpContext httpContext) {
@@ -38,25 +46,40 @@ public class DefaultModelBinder implements IModelBinder {
         Parameter[] parameters = m.getParameters();
         IModelValueCollector modelValueCollector = new DefaultModelValueCollector(httpContext);
         httpContext.ActionContext.ModelValueCollector = modelValueCollector;
-        ParameterValueProvider parameterValueProvider = new ParameterValueProvider(modelValueCollector, httpContext,provider);
+        ParameterValueProvider parameterValueProvider = new ParameterValueProvider(modelValueCollector, httpContext, provider);
+        Set<ConstraintViolation<Object>> validationResult = new HashSet<>();
         for (Parameter p : parameters) {
 
-            Object value=null;
+            Object value = null;
             for (Map.Entry<Predicate<Parameter>, IValueResolver> entry : parameterValueProvider.getValueResolverMap().entrySet()) {
                 if (entry.getKey().test(p)) {
-                     value=entry.getValue().resolve(p);
+                    value = entry.getValue().resolve(p);
                     break;
                 }
             }
-            if(value==null && ParameterValueProvider.isPrimitiveType(p.getType())){
-                value= getDefaultValue(p.getType());
+            if (value == null && ParameterValueProvider.isPrimitiveType(p.getType())) {
+                value = getDefaultValue(p.getType());
             }
+            validator.validate(value).stream().forEach(x -> validationResult.add(x));
+
             params.add(value);
 
 
         }
 
+        //from config setting check throw exception or set controller model state
+        if (validationResult.size() > 0) {
+            httpContext.ActionContext.ModelValidationResult = validationResult;
+            //for now returning the badresult with validation message
+             ModelError error= new ModelError();
+             error.setMessage("Model validation Failed");
+            for(ConstraintViolation<Object> objectConstraintViolation:validationResult){
+                error.getErrors().put(objectConstraintViolation.getPropertyPath().toString(),objectConstraintViolation.getMessage());
+            }
+            ModelValidationResult result= new ModelValidationResult(error, HttpStatus.BadRequest);
+            httpContext.ActionContext.ActionResult=result;
 
+        }
         return params.toArray();
     }
 

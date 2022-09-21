@@ -1,21 +1,14 @@
 package minicore;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
-import minicore.configuration.SystemConfig;
+import org.hibernate.validator.HibernateValidator;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 public class Application {
     public static void main(String[] args) throws IOException {
@@ -36,39 +29,56 @@ public class Application {
 //            System.out.println(s.getKey()+"="+s.getValue());
 //
 //        }
+validate();
 
+
+    }
+
+    public  static  void validate()
+    {
+        Validator validator = Validation.byProvider( HibernateValidator.class )
+                .configure()
+                .failFast( true )
+                .buildValidatorFactory()
+                .getValidator();
+
+        Car car = new Car( null, false );
+
+        Set<ConstraintViolation<Car>> constraintViolations = validator.validate( car );
+
+//        assertEquals( 1, constraintViolations.size() );
     }
 }
-class TestModel{
-    String name;
-    int port;
 
-    public String getName() {
-        return name;
+class Car {
+
+    @NotNull
+    private String manufacturer;
+
+    public String getManufacturer() {
+        return manufacturer;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
     }
 
-    public int getPort() {
-        return port;
+    public boolean isRegistered() {
+        return isRegistered;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setRegistered(boolean registered) {
+        isRegistered = registered;
     }
 
-    public boolean isPassword() {
-        return password;
+    @AssertTrue
+    private boolean isRegistered;
+
+    public Car(String manufacturer, boolean isRegistered) {
+        this.manufacturer = manufacturer;
+        this.isRegistered = isRegistered;
     }
 
-    public void setPassword(boolean password) {
-        this.password = password;
-    }
-
-    boolean password;
-
-
-
+    //getters and setters...
 }
+
