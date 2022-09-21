@@ -4,4 +4,6 @@ import minicore.contracts.HttpContext;
 
 public interface IMvcHandler {
     void process(HttpContext httpContext) throws Exception;
+    public void executeResult(HttpContext httpContext);
+
 }

@@ -91,8 +91,8 @@ public class MvcHandler implements IMvcHandler {
             //if action method throws exception then after exception filter not be e
             executeFilterAfterActionExecuted(httpContext);
             //execute  result
-            resultExectutor.executeResult(httpContext, getResultFilters(httpContext));
-
+//            executeResult(httpContext);
+//
 //            if (httpContext.ActionContext.IsActionRaiseException) {
 //                executeExceptionFilters(httpContext, httpContext.ActionContext.ActionException);
 //            }
@@ -104,6 +104,10 @@ public class MvcHandler implements IMvcHandler {
         }
 
 
+    }
+
+    public void executeResult(HttpContext httpContext) {
+        resultExectutor.executeResult(httpContext, getResultFilters(httpContext));
     }
 
     public IActionResult executeAction(HttpContext context, Object controller) throws Exception {
