@@ -6,6 +6,7 @@ import minicore.contracts.mvc.MvcConfigurer;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.InvalidPropertiesFormatException;
@@ -41,22 +42,35 @@ public class AppConfigurer {
         // read and put in custom properties
     }
 
-    public void addXmlFile(String filePath) throws IOException {
+    public void addXmlFile(String filePath)  {
         if(!filePath.endsWith("xml")){
-            throw new InvalidPropertiesFormatException(filePath);
+            throw new RuntimeException(new InvalidPropertiesFormatException(filePath));
         }
-        URL resource = SystemConfig.class.getClassLoader().getResource(filePath);
-        this.customProperties.putAll(readConfigFromXml(resource.getPath()));
+        Map<Object, Object> objectObjectMap = readXmlConfig(filePath);
+        this.customProperties.putAll(objectObjectMap);
     }
 
-    public void custom(ICustomConfigurer custom) throws IOException {
-        Map<String, Object> customObject = custom.custom();
+    public void custom(ICustomConfigurer custom)  {
+        Map<String, Object> customObject = getCustomProperties(custom);
+        if(customObject==null ||customObject.isEmpty()){
+            return;
+        }
         this.customProperties.putAll(customObject);
     }
 
+    private static Map<String, Object> getCustomProperties(ICustomConfigurer custom)  {
+        Map<String, Object> customObject = null;
+        try {
+            customObject = custom.custom();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return customObject;
+    }
+
     public void addPropertyFile(String filePath) {
-        URL resource = SystemConfig.class.getClassLoader().getResource(filePath);
-        this.customProperties.putAll(readConfig(resource.getPath()));
+        Map<Object, Object> objectObjectMap = readConfig(filePath);
+        this.customProperties.putAll(objectObjectMap);
     }
 
     public static void Configure(IAppConfigure appConfigure) {
@@ -67,13 +81,31 @@ public class AppConfigurer {
 
     private Map<Object, Object> readConfig(String filename) {
         Properties p = new Properties();
-        try (FileInputStream f = (FileInputStream) ConfigurationReader.class.getClassLoader().getResourceAsStream(filename)) {
+        try (InputStream f = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename)) {
 
             p.load(f);
 
         } catch (FileNotFoundException e) {
             System.out.println(e.getLocalizedMessage());
             e.printStackTrace();
+            throw  new RuntimeException(e);
+        } catch (IOException e) {
+            System.out.println(e.getLocalizedMessage());
+            e.printStackTrace();
+        }
+        return p;
+
+    }
+    private Map<Object, Object> readXmlConfig(String filename) {
+        Properties p = new Properties();
+        try (InputStream f = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename)) {
+
+            p.loadFromXML(f);
+
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getLocalizedMessage());
+            e.printStackTrace();
+            throw  new RuntimeException(e);
         } catch (IOException e) {
             System.out.println(e.getLocalizedMessage());
             e.printStackTrace();

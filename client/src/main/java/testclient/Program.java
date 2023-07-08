@@ -25,12 +25,10 @@ public class Program {
                 .ConfigureHost(option -> {
 
 //                       option.addPropertyFile("CustomFile.properties");
-//
-//                       option.addJsonFile("CustomjsonFile.json");
-//
-//                       option.addXmlFile("CustomxmlFile.xml");
-                })
-
+                    option.addPropertyFile("custom.properties");
+////                       option.addJsonFile("CustomjsonFile.json");
+                       option.addXmlFile("propertieXML.xml");
+               })
                 .useStartup(AppStartup.class)
 
                 .run();
