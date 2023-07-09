@@ -16,7 +16,6 @@ public class XMLHelper {
     public  static String serialize(Object object) {
 
         try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
             return   xmlMapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
