@@ -45,7 +45,7 @@ public class SystemConfig {
     }
 
      public static SystemConfig load ()  {
-        URL resource = SystemConfig.class.getClassLoader().getResource("startup.json");
+        URL resource = Thread.currentThread().getContextClassLoader().getResource("startup.json");
 
          String systemConfigString = null;
          try {
