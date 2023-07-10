@@ -1,5 +1,5 @@
 {
-  "port": 5600,
+  "port": 8080,
   "profile": "development",
   "application": "Minicore client"
 }
