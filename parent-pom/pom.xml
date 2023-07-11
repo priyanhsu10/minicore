@@ -6,7 +6,7 @@
 
     <groupId>io.github.priyanhsu10</groupId>
     <artifactId>minicore-parent</artifactId>
-    <version>1.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
     <url>https://github.com/priyanhsu10/minicore</url>
@@ -158,6 +158,7 @@
                             <goals>
                                 <goal>jar-no-fork</goal>
                             </goals>
+                            <inherited>false</inherited>
                         </execution>
                     </executions>
                 </plugin>
@@ -171,6 +172,8 @@
                             <goals>
                                 <goal>jar</goal>
                             </goals>
+                            <inherited>false</inherited>
+
                         </execution>
                     </executions>
                 </plugin>
@@ -185,6 +188,8 @@
                             <goals>
                                 <goal>sign</goal>
                             </goals>
+                            <inherited>false</inherited>
+
                         </execution>
                     </executions>
                 </plugin>
@@ -193,6 +198,8 @@
                     <artifactId>nexus-staging-maven-plugin</artifactId>
                     <version>1.6.7</version>
                     <extensions>true</extensions>
+                    <inherited>false</inherited>
+
                     <configuration>
                         <serverId>ossrh</serverId>
                         <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
