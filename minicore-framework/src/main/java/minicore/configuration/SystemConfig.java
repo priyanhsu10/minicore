@@ -3,7 +3,10 @@ package minicore.configuration;
 
 import minicore.json.JsonHelper;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,16 +47,47 @@ public class SystemConfig {
     public SystemConfig() {
     }
 
-     public static SystemConfig load ()  {
-        URL resource = Thread.currentThread().getContextClassLoader().getResource("startup.json");
+     public static SystemConfig load (ClassLoader classLoader)  {
 
-         String systemConfigString = null;
          try {
-             systemConfigString = Files.readAllLines(Paths.get(resource.getPath())).stream().collect(Collectors.joining());
+             String systemConfigString = getContent("startup.json",classLoader);
+             return JsonHelper.deserialize(systemConfigString,SystemConfig.class);
+
          } catch (IOException e) {
+             //todo:fix exception
              throw new RuntimeException(e);
          }
-         return JsonHelper.deserialize(systemConfigString,SystemConfig.class);
 
+    }
+
+    public static String getContent(String fileName, ClassLoader classLoader) throws IOException {
+        //Creating instance to avoid static member methods
+        InputStream is = getFileAsIOStream(fileName,classLoader);
+       return   getFileContent(is);
+
+    }
+    private  static InputStream getFileAsIOStream(final String fileName,ClassLoader classLoader)
+    {
+        InputStream ioStream = classLoader
+                .getResourceAsStream(fileName);
+
+        if (ioStream == null) {
+            throw new IllegalArgumentException(fileName + " is not found");
+        }
+        return ioStream;
+    }
+    private static String getFileContent(InputStream is) throws IOException
+    {
+        StringBuilder sb= new StringBuilder();
+        try (InputStreamReader isr = new InputStreamReader(is);
+             BufferedReader br = new BufferedReader(isr);)
+        {
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+            is.close();
+        }
+        return sb.toString();
     }
 }

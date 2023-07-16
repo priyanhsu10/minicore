@@ -20,7 +20,7 @@ public class Program {
         Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         rootLogger.setLevel(Level.INFO);
 
-        WebHostBuilder.build(args)
+        WebHostBuilder.build(args, new Program().getClass().getClassLoader())
                 //configure custom properties
                 .ConfigureHost(option -> {
 

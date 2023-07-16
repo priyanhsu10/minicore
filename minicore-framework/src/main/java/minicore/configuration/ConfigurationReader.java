@@ -11,8 +11,10 @@ import java.util.Collections;
 import java.util.Properties;
 
 public class ConfigurationReader {
-    public ConfigurationReader() {
-        this.config = SystemConfig.load();
+    private  ClassLoader classLoader;
+    public ConfigurationReader(ClassLoader classLoader) {
+        this.classLoader=classLoader;
+        this.config = SystemConfig.load(classLoader);
     }
 
     private SystemConfig config;
@@ -43,13 +45,14 @@ public class ConfigurationReader {
     }
 
     private void readConfig(String filename) {
-        URL resource = SystemConfig.class.getClassLoader().getResource(filename);
-        System.out.println(resource.getPath());
-        try (InputStream resourceAsStream = Files.newInputStream(Paths.get(resource.getPath()));) {
-            properties.load(resourceAsStream);
-        } catch (FileNotFoundException e) {
-            System.out.println(e.getLocalizedMessage());
-            e.printStackTrace();
+
+        try ( InputStream ioStream = classLoader
+                .getResourceAsStream(filename);) {
+            if(ioStream==null){
+
+                return;
+            }
+            properties.load(ioStream);
         } catch (IOException e) {
             System.out.println(e.getLocalizedMessage());
             e.printStackTrace();
