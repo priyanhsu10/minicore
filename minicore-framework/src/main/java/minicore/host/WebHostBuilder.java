@@ -3,7 +3,6 @@ package minicore.host;
 import minicore.configuration.AppConfigurer;
 import minicore.configuration.ConfigurationReader;
 import minicore.configuration.IAppConfigure;
-import minicore.configuration.SystemConfig;
 import minicore.contracts.IActionDelegate;
 import minicore.contracts.host.IHostBuilder;
 import minicore.contracts.host.IServer;
@@ -27,7 +26,13 @@ public class WebHostBuilder implements IHostBuilder {
     private  static IPipelineBuilder pipelineBuilder;
     private  static IApplicationBuilder applicationBuilder;
     private final String[] args;
-    private  ConfigurationReader reader= new ConfigurationReader();
+    private  ConfigurationReader reader;
+
+    public WebHostBuilder(String[] args, ClassLoader classLoader) {
+        this.args=args;
+        reader= new ConfigurationReader(classLoader);
+    }
+
     public static IActionDelegate getAction() {
         return action;
     }
@@ -116,9 +121,9 @@ public class WebHostBuilder implements IHostBuilder {
  }
 
 
-    public  static WebHostBuilder build(String[] args){
+    public  static WebHostBuilder build(String[] args, ClassLoader classLoader){
 
-        return  new WebHostBuilder(args);
+        return  new WebHostBuilder(args,classLoader);
 
     }
 
