@@ -1,14 +1,9 @@
 package minicore.configuration;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
-import minicore.contracts.ioc.IServiceCollection;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -30,7 +25,7 @@ public class JsonConfigParser implements ICustomConfigurer{
         // convert JSON file to map
         ObjectMapper objectMapper = new ObjectMapper();
         byte[] mapData = Files.readAllBytes(Paths.get(path));
-        Map<String,String> myMap = new HashMap<String, String>();
+        HashMap<String, String> myMap = new HashMap<String, String>();
         myMap = objectMapper.readValue(mapData, HashMap.class);
         // print map entries
         Properties p= mapper.writeValueAsProperties(myMap);
