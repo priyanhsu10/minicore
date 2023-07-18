@@ -5,3 +5,5 @@ minicore-archetype/target/
 .idea
 */.idea/
 */.metadata/
+.DS_Store
+
