@@ -6,7 +6,7 @@
 
     <groupId>io.github.priyanhsu10</groupId>
     <artifactId>minicore-parent</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
     <packaging>pom</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
     <url>https://github.com/priyanhsu10/minicore</url>
