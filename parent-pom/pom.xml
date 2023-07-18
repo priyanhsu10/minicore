@@ -6,7 +6,7 @@
 
     <groupId>io.github.priyanhsu10</groupId>
     <artifactId>minicore-parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.2</version>
     <packaging>pom</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
     <url>https://github.com/priyanhsu10/minicore</url>
@@ -32,7 +32,7 @@
     </developers>
     <properties>
         <java.version>1.8</java.version>
-        <program_class>Program.java</program_class>
+        <program_class>Application.java</program_class>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <slf4j.version>2.0.0</slf4j.version>
@@ -65,7 +65,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
-            <version>9.4.3.v20170317</version>
+            <version>9.4.51.v20230217</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
@@ -92,7 +92,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>5.3.4.Final</version>
+            <version>5.3.6.Final</version>
         </dependency>
         <dependency>
             <groupId>javax.el</groupId>
@@ -118,11 +118,7 @@
     </distributionManagement>
         <build>
             <pluginManagement>
-                <!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) &ndash;&gt; -->
                 <plugins>
-                    <!-- this is required for model binding with parameter name&ndash;&gt;-->
-
-
                     <plugin>
                         <artifactId>maven-compiler-plugin</artifactId>
                         <version>3.8.0</version>
@@ -135,11 +131,76 @@
 
                 </plugins>
             </pluginManagement>
-
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>3.3.0</version>
+                    <executions>
+                        <execution>
+                            <id>add-resource</id>
+                            <phase>generate-resources</phase>
+                            <goals>
+                                <goal>add-resource</goal>
+                            </goals>
+                            <configuration>
+                                <resources>
+                                    <resource>
+                                        <directory>src/resources</directory>
+                                        <targetPath>json</targetPath>
+                                    </resource>
+                                </resources>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M7</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.junit.jupiter</groupId>
+                            <artifactId>junit-jupiter-engine</artifactId>
+                            <version>5.4.0</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>single</goal>
+                            </goals>
+                            <configuration>
+                                <archive>
+                                    <manifest>
+                                        <mainClass>
+                                            ${program_class}
+                                        </mainClass>
+                                    </manifest>
+                                </archive>
+                                <descriptorRefs>
+                                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                                </descriptorRefs>
+                                <appendAssemblyId>false</appendAssemblyId>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
         </build>
     <profiles>
         <profile>
-            <id>maven-central</id>
+            <id>ossrh</id>
+            <activation>
+                <property>
+                    <name>!child.profile.disabled</name>
+                </property>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
@@ -204,74 +265,9 @@
 
             </build>
         </profile>
-        <profile>
-            <id>client</id>
-            <build>
 
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>build-helper-maven-plugin</artifactId>
-                        <version>3.3.0</version>
-                        <executions>
-                            <execution>
-                                <id>add-resource</id>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>add-resource</goal>
-                                </goals>
-                                <configuration>
-                                    <resources>
-                                        <resource>
-                                            <directory>src/resources</directory>
-                                            <targetPath>json</targetPath>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>3.0.0-M7</version>
-                        <dependencies>
-                            <dependency>
-                                <groupId>org.junit.jupiter</groupId>
-                                <artifactId>junit-jupiter-engine</artifactId>
-                                <version>5.4.0</version>
-                            </dependency>
-                        </dependencies>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                                <configuration>
-                                    <archive>
-                                        <manifest>
-                                            <mainClass>
-                                                ${program_class}
-                                            </mainClass>
-                                        </manifest>
-                                    </archive>
-                                    <descriptorRefs>
-                                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                                    </descriptorRefs>
-                                    <appendAssemblyId>false</appendAssemblyId>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
 
-        </profile>
+
     </profiles>
     <reporting>
         <plugins>
