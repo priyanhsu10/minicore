@@ -1,2 +1,7 @@
-/minicore-framework/target/
-
+minicore-framework/target
+minicore-client/target/
+minicore-pom/target/
+minicore-archetype/target/
+.idea
+*/.idea/
+*/.metadata/
