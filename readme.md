@@ -530,8 +530,9 @@ IExceptionFilter fitler have 2 Methods
 }
  ```
 
-> Exception fitler can be Configure globally in Startup Class in configureServices method .
+ Exception fitler can be Configure globally in Startup Class in configureServices method .
 where we can register the Custom Exception fitler with MvcConfigurer using options.addExceptionFilter(..).
+
 
 ```javascript
 public class AppStartup implements IStartup {
