@@ -2,7 +2,7 @@ minicore parent
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.priyanhsu10/minicore-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.priyanhsu10/minicore-parent/)
 
 minicore- framework
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.priyanhsu10/minicore-framework/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.priyanhsu10/minicore-framework/)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.priyanhsu10/minicore-api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.priyanhsu10/minicore-api/)
 
 minicore -archetype
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.priyanhsu10/minicore-archetype/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.priyanhsu10/minicore-archetype/)
