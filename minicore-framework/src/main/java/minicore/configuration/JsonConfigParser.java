@@ -10,11 +10,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class JsonConfigParser implements ICustomConfigurer{
+public class JsonConfigParser implements ICustomConfigurer {
 
     private final String path;
 
-    public JsonConfigParser(String  path) {
+    public JsonConfigParser(String path) {
         this.path = path;
     }
 
@@ -28,8 +28,8 @@ public class JsonConfigParser implements ICustomConfigurer{
         HashMap<String, String> myMap = new HashMap<String, String>();
         myMap = objectMapper.readValue(mapData, HashMap.class);
         // print map entries
-        Properties p= mapper.writeValueAsProperties(myMap);
-        Map<String,Object> result= new HashMap<>();
+        Properties p = mapper.writeValueAsProperties(myMap);
+        Map<String, Object> result = new HashMap<>();
         p.forEach((key, value) -> {
             result.put(key.toString(), value);
             System.out.println(key + "=" + value);

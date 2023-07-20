@@ -1,26 +1,22 @@
 package minicore.mvc;
 
-import minicore.contracts.ActionContext;
 import minicore.contracts.ControllerBase;
 import minicore.contracts.HttpContext;
 import minicore.contracts.annotations.filters.ActionFilter;
 import minicore.contracts.annotations.filters.ResultFilter;
 import minicore.contracts.filters.*;
-import minicore.contracts.modelbinding.DefaultModelValueCollector;
 import minicore.contracts.modelbinding.IModelBinder;
 import minicore.contracts.mvc.IMvcHandler;
 import minicore.contracts.results.IActionResult;
 import minicore.contracts.results.IResultExectutor;
 import minicore.contracts.results.ObjectResult;
-import minicore.host.AppFilter;
 import minicore.ioc.container.Scope;
-import minicore.mildlewares.exceptions.ExceptionResult;
+import minicore.mildlewares.exceptions.MvcException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,9 +33,9 @@ public class MvcHandler implements IMvcHandler {
     private List<IResultExecutionFilter> resultFilters = new ArrayList<>();
     private final List<IAuthenticationFilter> authFilters;
     private final List<IExceptionFilter> exceptionFilters;
-    public  static Logger logger= LoggerFactory.getLogger(MvcHandler.class);
-    public MvcHandler(IModelBinder binder, IFilterProvider iFilterProvider, IResultExectutor resultExectutor) {
+    public static Logger logger = LoggerFactory.getLogger(MvcHandler.class);
 
+    public MvcHandler(IModelBinder binder, IFilterProvider iFilterProvider, IResultExectutor resultExectutor) {
 
         this.binder = binder;
         this.filterProvider = iFilterProvider;
@@ -53,56 +49,58 @@ public class MvcHandler implements IMvcHandler {
     public void process(HttpContext httpContext) throws Exception {
         prepareActionFilters(httpContext);
         Supplier<Boolean> isResultSet = () -> (httpContext.ActionContext.ActionResult != null);
-        //1 . execute  authFilter
+        // 1 . execute authFilter
         executeAuthFilters(httpContext);
 
-        //auth filter set reusult mean not autherized
-        //short-circuiting pipeline
-        if (isResultSet.get()) return;
+        // auth filter set result mean not autherized
+        // short-circuiting pipeline
+        if (isResultSet.get())
+            return;
 
-        //2. controller instantiation
+        // 2. controller instantiation
         Object c = HttpContext.services.resolve(httpContext.getEndPointMetadata().ControllerClass);
         ((ControllerBase) c).httpContext = httpContext;
         try {
-            //3.model binding
+            // 3.model binding
 
             binder.bindModel(httpContext);
-            //4.execute before action global filter
-            //5.execute controller before action filter
-            //6. execute before action filter
+            // 4.execute before action global filter
+            // 5.execute controller before action filter
+            // 6. execute before action filter
 
             executeFilterBeforeActionExecution(httpContext);
-            if (isResultSet.get()) return;
+            if (isResultSet.get())
+                return;
 
-            //7. execute action ()
+            // 7. execute action ()
 
             try {
                 httpContext.ActionContext.ActionResult = executeAction(httpContext, c);
 
             } catch (RuntimeException e) {
-                //set exception on action context
+                // set exception on action context
                 httpContext.ActionContext.IsActionRaiseException = true;
                 httpContext.ActionContext.ActionException = e;
                 this.executeExceptionFilters(httpContext, e);
             }
             // 6. execute after action filter
-            //5.execute controller after action filter
+            // 5.execute controller after action filter
             // 4.execute after action global filter
-            //if action method throws exception then after exception filter not be e
+            // if action method throws exception then after exception filter not be e
             executeFilterAfterActionExecuted(httpContext);
-            //execute  result
-//            executeResult(httpContext);
-//
-//            if (httpContext.ActionContext.IsActionRaiseException) {
-//                executeExceptionFilters(httpContext, httpContext.ActionContext.ActionException);
-//            }
+            // execute result
+            // executeResult(httpContext);
+            //
+            // if (httpContext.ActionContext.IsActionRaiseException) {
+            // executeExceptionFilters(httpContext,
+            // httpContext.ActionContext.ActionException);
+            // }
             //
         } catch (Exception e) {
-            //unhandled exceptions
-            logger.error(e.getMessage(),e);
+            // unhandled exceptions
+            logger.error(e.getMessage(), e);
             throw e;
         }
-
 
     }
 
@@ -113,16 +111,17 @@ public class MvcHandler implements IMvcHandler {
     public IActionResult executeAction(HttpContext context, Object controller) throws Exception {
 
         try {
-            Object result = context.getEndPointMetadata().ActionMethod.invoke(controller, context.ActionContext.MethodParameters);
+            Object result = context.getEndPointMetadata().ActionMethod.invoke(controller,
+                    context.ActionContext.MethodParameters);
             if (result == null) {
                 return new ObjectResult(null);
-            }else if (result.getClass().isAssignableFrom(IActionResult.class)) {
+            } else if (result.getClass().isAssignableFrom(IActionResult.class)) {
                 return (IActionResult) result;
             } else {
                 return new ObjectResult(result);
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
             throw e;
         }
     }
@@ -146,7 +145,6 @@ public class MvcHandler implements IMvcHandler {
 
             actionFilters.get(i).afterExecute(context);
 
-
         }
     }
 
@@ -155,8 +153,8 @@ public class MvcHandler implements IMvcHandler {
 
             actionFilters.get(i).beforeExecute(context);
             if (context.ActionContext.ActionResult != null) {
-                //auth filter set reusult mean not autherized
-                //short-circuiting pipeline
+                // auth filter set reusult mean not autherized
+                // short-circuiting pipeline
                 break;
             }
 
@@ -168,8 +166,8 @@ public class MvcHandler implements IMvcHandler {
 
             authFilters.get(i).onAuthorized(context);
             if (context.ActionContext.ActionResult != null) {
-                //auth filter set reusult mean not autherized
-                //short-circuiting pipeline
+                // auth filter set reusult mean not autherized
+                // short-circuiting pipeline
                 break;
             }
 
@@ -177,11 +175,13 @@ public class MvcHandler implements IMvcHandler {
     }
 
     private void prepareActionFilters(HttpContext context) {
-        List<IActionFilter> controllerActionFilters = getFilters(Arrays.stream(context.getEndPointMetadata().ControllerClass.getDeclaredAnnotations()));
+        List<IActionFilter> controllerActionFilters = getFilters(
+                Arrays.stream(context.getEndPointMetadata().ControllerClass.getDeclaredAnnotations()));
         this.actionFilters.addAll(controllerActionFilters);
 
-        //medhod filter
-        List<IActionFilter> methodfilters = getFilters(Arrays.stream(context.getEndPointMetadata().ActionMethod.getDeclaredAnnotations()));
+        // medhod filter
+        List<IActionFilter> methodfilters = getFilters(
+                Arrays.stream(context.getEndPointMetadata().ActionMethod.getDeclaredAnnotations()));
         this.actionFilters.addAll(methodfilters);
     }
 
@@ -203,5 +203,4 @@ public class MvcHandler implements IMvcHandler {
 
 }
 
-
-//}
+// }

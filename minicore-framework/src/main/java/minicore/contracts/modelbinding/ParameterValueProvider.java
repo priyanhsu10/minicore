@@ -6,7 +6,7 @@ import minicore.contracts.HttpMethod;
 import minicore.contracts.annotations.modelBinding.*;
 import minicore.contracts.formaters.IFormatProvider;
 import minicore.contracts.formaters.IInputFormatter;
-import minicore.mvc.filters.MvcException;
+import minicore.mildlewares.exceptions.MvcException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
@@ -37,7 +37,6 @@ public class ParameterValueProvider {
         primitiveTypes.add(byte.class);
         primitiveTypes.add(Byte.class);
 
-
     }
 
     public Map<Predicate<Parameter>, IValueResolver> getValueResolverMap() {
@@ -60,8 +59,11 @@ public class ParameterValueProvider {
         valueResolverMap.put(isFromForm(), this::valueFromFrom);
 
         valueResolverMap.put(getParameterPredicate(), this::valueFromRoute);
-        valueResolverMap.put(p -> isPrimitiveType(p.getType()) && p.isAnnotationPresent(FromHeader.class), this::valueFromHeader);
-        valueResolverMap.put(p -> isPrimitiveType(p.getType()) && collector.getQueryParameters().containsKey(p.getName()), this::valueFromQuery);
+        valueResolverMap.put(p -> isPrimitiveType(p.getType()) && p.isAnnotationPresent(FromHeader.class),
+                this::valueFromHeader);
+        valueResolverMap.put(
+                p -> isPrimitiveType(p.getType()) && collector.getQueryParameters().containsKey(p.getName()),
+                this::valueFromQuery);
         valueResolverMap.put(isCustomObjectContainsModelBindingAttr(), this::CustomObjectContainsModelBindingAttr);
         valueResolverMap.put(p -> p.isAnnotationPresent(FromFile.class), this::valueFromFile);
 
@@ -78,7 +80,8 @@ public class ParameterValueProvider {
     }
 
     private Predicate<Parameter> getParameterPredicate() {
-        return p -> p.isAnnotationPresent(FromRoute.class) || collector.getRouteData().containsKey(p.getName()) || httpContext.getEndPointMetadata().isPattern;
+        return p -> p.isAnnotationPresent(FromRoute.class) || collector.getRouteData().containsKey(p.getName())
+                || httpContext.getEndPointMetadata().isPattern;
     }
 
     public Object valueFromRoute(Parameter p) {
@@ -87,7 +90,8 @@ public class ParameterValueProvider {
     }
 
     public Object valueFromQuery(Parameter p) {
-        return collector.getQueryParameters().containsKey(p.getName()) ? collector.getQueryParameters().get(p.getName()) : createInstance(p.getType());
+        return collector.getQueryParameters().containsKey(p.getName()) ? collector.getQueryParameters().get(p.getName())
+                : createInstance(p.getType());
 
     }
 
@@ -100,12 +104,12 @@ public class ParameterValueProvider {
     }
 
     private boolean isPutOrPost() {
-        return httpContext.getRequest().getMethod().equals("POST") || httpContext.getRequest().getMethod().equals("PUT");
+        return httpContext.getRequest().getMethod().equals("POST")
+                || httpContext.getRequest().getMethod().equals("PUT");
     }
 
     private Predicate<Parameter> isCustomObjectContainsModelBindingAttr() {
         return p -> {
-
 
             boolean isCustomObject = !ParameterValueProvider.isPrimitiveType(p.getType()) &&
                     !p.isAnnotationPresent(FromBody.class) &&
@@ -115,9 +119,8 @@ public class ParameterValueProvider {
                     !p.isAnnotationPresent(FromHeader.class) &&
                     !p.isAnnotationPresent(FromQuery.class);
 
-
-            boolean canProcess = isCustomObject && Arrays.stream(p.getType().getDeclaredFields()).anyMatch(f ->
-                    f.isAnnotationPresent(FromRoute.class) || f.isAnnotationPresent(FromQuery.class) ||
+            boolean canProcess = isCustomObject && Arrays.stream(p.getType().getDeclaredFields())
+                    .anyMatch(f -> f.isAnnotationPresent(FromRoute.class) || f.isAnnotationPresent(FromQuery.class) ||
                             f.isAnnotationPresent(FromHeader.class) ||
                             f.isAnnotationPresent(FromBody.class));
 
@@ -134,7 +137,7 @@ public class ParameterValueProvider {
             for (Field f : p.getType().getDeclaredFields()) {
                 f.setAccessible(true);
 
-                if (f.isAnnotationPresent(FromHeader.class) ) {
+                if (f.isAnnotationPresent(FromHeader.class)) {
                     f.set(parameter, collector.getHeaders().get(f.getAnnotation(FromHeader.class).Key()));
                     continue;
                 }
@@ -152,7 +155,6 @@ public class ParameterValueProvider {
                     continue;
                 }
 
-
             }
             return parameter;
         } catch (Exception e) {
@@ -168,10 +170,9 @@ public class ParameterValueProvider {
 
     public Object valueFromBody(Class<?> p) {
 
-
-        //validate accept header and check support for
+        // validate accept header and check support for
         if (!provider.canSuportedInputMediaType(httpContext.ActionContext.InputMediaType)) {
-            //if not support then throw exception => not supported
+            // if not support then throw exception => not supported
             throw new MvcException("Content type not supported");
         }
         // select supported input formatter
@@ -181,7 +182,7 @@ public class ParameterValueProvider {
         return body;
     }
 
-    //this section should be tested thoroughly with list type parameters
+    // this section should be tested thoroughly with list type parameters
     public Object valueFromFrom(Parameter p) {
         try {
             Object parameter = createInstance(p.getType());
@@ -208,14 +209,12 @@ public class ParameterValueProvider {
                     }
                 }
 
-
             }
             return parameter;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
 
     private Object createInstance(Class<?> p) {
         try {
@@ -227,7 +226,9 @@ public class ParameterValueProvider {
     }
 
     public Object valueFromHeader(Parameter p) {
-        return collector.getHeaders().containsKey(p.getName()) ? collector.getHeaders().get(p.getAnnotation(FromHeader.class).Key()) : createInstance(p.getType());
+        return collector.getHeaders().containsKey(p.getName())
+                ? collector.getHeaders().get(p.getAnnotation(FromHeader.class).Key())
+                : createInstance(p.getType());
     }
 
     public static boolean isPrimitiveType(Class<?> parameterType) {

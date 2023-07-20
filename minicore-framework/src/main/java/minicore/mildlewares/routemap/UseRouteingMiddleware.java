@@ -2,14 +2,15 @@ package minicore.mildlewares.routemap;
 
 import minicore.contracts.*;
 import minicore.contracts.IMiddleware;
-import minicore.contracts.modelbinding.DefaultModelValueCollector;
 import minicore.host.WebHostBuilder;
+import minicore.mildlewares.exceptions.MvcException;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.stream.Collectors;
 
 public class UseRouteingMiddleware implements IMiddleware {
+    private static final String CONTENT_TYPE = "Content-Type";
+    private static final String ACCEPT = "Accept";
+    private static final String APPLICATION_JSON = "application/json";
     // inject dependency
     private IActionDelegate action;
 
@@ -31,7 +32,7 @@ public class UseRouteingMiddleware implements IMiddleware {
             action.invoke(httpContext);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new MvcException(e);
         }
 
     }
@@ -44,7 +45,7 @@ public class UseRouteingMiddleware implements IMiddleware {
         context.setRoute(routPath);
         EndPointMetadata e = WebHostBuilder.getEndPointManger().getEndPoint(routPath, context.getRequest().getMethod());
         if (e == null) {
-            //write not found result
+            // write not found result
             return;
         }
         context.setEndPointMetadata(e);
@@ -54,11 +55,13 @@ public class UseRouteingMiddleware implements IMiddleware {
     private void createActionContext(HttpContext context) {
         ActionContext actionContext = new ActionContext();
         // set content type
-        actionContext.OutputMediaType = context.getRequest().getHeader("Accept");
-        actionContext.OutputMediaType = actionContext.OutputMediaType == null ? "application/json" : actionContext.OutputMediaType;
+        actionContext.OutputMediaType = context.getRequest().getHeader(ACCEPT);
+        actionContext.OutputMediaType = actionContext.OutputMediaType == null ? APPLICATION_JSON
+                : actionContext.OutputMediaType;
 
-        actionContext.InputMediaType = context.getRequest().getHeader("Content-Type");
-        actionContext.InputMediaType = actionContext.InputMediaType == null ? "application/json" : actionContext.InputMediaType;
+        actionContext.InputMediaType = context.getRequest().getHeader(CONTENT_TYPE);
+        actionContext.InputMediaType = actionContext.InputMediaType == null ? APPLICATION_JSON
+                : actionContext.InputMediaType;
         context.ActionContext = actionContext;
     }
 }

@@ -4,6 +4,7 @@ import minicore.contracts.HttpContext;
 import minicore.contracts.filters.IExceptionFilter;
 import minicore.contracts.results.HttpStatus;
 import minicore.contracts.results.ObjectResult;
+import minicore.mildlewares.exceptions.MvcException;
 
 public class MvcExcetionFilter implements IExceptionFilter {
     @Override
@@ -14,7 +15,7 @@ public class MvcExcetionFilter implements IExceptionFilter {
     @Override
     public <T extends RuntimeException> void onException(HttpContext context, T e) {
 
-        context.ActionContext.ActionResult= new ObjectResult(new MvcException(e), HttpStatus.InternalServerError);
+        context.ActionContext.ActionResult = new ObjectResult(new MvcException(e), HttpStatus.InternalServerError);
     }
 
 }

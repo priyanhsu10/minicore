@@ -248,7 +248,7 @@ public class HelloController  extends ControllerBase {
 2. app.{profile}.properties
 3. custom property configuration provider
 4. Envronment variables entries
-   5.Command line Aguments -m_{propertykey}=value
+5. Command line Aguments -m_{propertykey}=value
 
 ```javascript
 public class Program {
@@ -318,10 +318,17 @@ public class HelloController  extends ControllerBase {
 
 ### Middleware
 
-> comminig soon ..
-![The San Juan Mountains are beautiful!](/assets/midleware.png "Archeture diamgram")
+> Middleware is software that's assembled into an app pipeline to handle requests and responses. 
+>
+>Each component:Chooses whether to pass the request to the next component in the pipeline.
+Can perform work before and after the next component in the pipeline
+>Middleware is software that's assembled into an app pipeline to handle requests and responses. Each component:
+Chooses whether to pass the request to the next component in the pipeline.
+Can perform work before and after the next component in the pipeline
+> 
+![](/assets/midleware.png "Archeture diamgram")
 
-### Routing
+### Http Route Annotations
 
 > Http Route Annotations
 1. @Route

@@ -1,10 +1,8 @@
 package minicore.configuration;
 
-import minicore.contracts.ioc.IServiceCollection;
-
 import java.util.Map;
 
-public class PropertyConfigParser  implements ICustomConfigurer {
+public class PropertyConfigParser implements ICustomConfigurer {
 
     private final String path;
 

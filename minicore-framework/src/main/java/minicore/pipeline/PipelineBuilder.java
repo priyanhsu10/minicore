@@ -1,7 +1,6 @@
 package minicore.pipeline;
 
 import minicore.contracts.HttpContext;
-import minicore.contracts.IAction;
 import minicore.contracts.IActionDelegate;
 import minicore.contracts.IMiddleware;
 import minicore.contracts.ioc.IServiceCollection;
@@ -22,9 +21,9 @@ public class PipelineBuilder implements IPipelineBuilder {
     }
 
     private IActionDelegate createPipeline(int index) {
-        if (index < (middlewareTypes.size()-1)) {
-            //create handler and pass context
-            IActionDelegate actionHandler = createPipeline(index+1);
+        if (index < (middlewareTypes.size() - 1)) {
+            // create handler and pass context
+            IActionDelegate actionHandler = createPipeline(index + 1);
 
             return build(index, actionHandler);
         } else {
@@ -41,9 +40,9 @@ public class PipelineBuilder implements IPipelineBuilder {
 
     private IActionDelegate build(int index, IActionDelegate action) {
         if (action == null) {
-            action= PipelineBuilder::next;
+            action = PipelineBuilder::next;
         }
-        IMiddleware middleware  = serviceCollection.resolve(middlewareTypes.get(index));
+        IMiddleware middleware = serviceCollection.resolve(middlewareTypes.get(index));
         middleware.setNext(action);
         return middleware::next;
 

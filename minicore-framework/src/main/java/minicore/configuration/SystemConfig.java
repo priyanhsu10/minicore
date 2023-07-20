@@ -1,23 +1,16 @@
 package minicore.configuration;
 
-
 import minicore.json.JsonHelper;
+import minicore.mildlewares.exceptions.MvcException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class SystemConfig {
-    private   int port;
-    private   String profile;
+    private int port;
+    private String profile;
     private String application;
 
     public String getProfile() {
@@ -47,41 +40,40 @@ public class SystemConfig {
     public SystemConfig() {
     }
 
-     public static SystemConfig load (ClassLoader classLoader)  {
+    public static SystemConfig load(ClassLoader classLoader) {
 
-         try {
-             String systemConfigString = getContent("startup.json",classLoader);
-             return JsonHelper.deserialize(systemConfigString,SystemConfig.class);
+        try {
+            String systemConfigString = getContent("startup.json", classLoader);
+            return JsonHelper.deserialize(systemConfigString, SystemConfig.class);
 
-         } catch (IOException e) {
-             //todo:fix exception
-             throw new RuntimeException(e);
-         }
+        } catch (IOException e) {
+            // todo:fix exception
+            throw new MvcException(e);
+        }
 
     }
 
     public static String getContent(String fileName, ClassLoader classLoader) throws IOException {
-        //Creating instance to avoid static member methods
-        InputStream is = getFileAsIOStream(fileName,classLoader);
-       return   getFileContent(is);
+        // Creating instance to avoid static member methods
+        InputStream is = getFileAsIOStream(fileName, classLoader);
+        return getFileContent(is);
 
     }
-    private  static InputStream getFileAsIOStream(final String fileName,ClassLoader classLoader)
-    {
+
+    private static InputStream getFileAsIOStream(final String fileName, ClassLoader classLoader) {
         InputStream ioStream = classLoader
                 .getResourceAsStream(fileName);
 
         if (ioStream == null) {
-            throw new IllegalArgumentException(fileName + " is not found");
+            throw new MvcException(fileName + " is not found");
         }
         return ioStream;
     }
-    private static String getFileContent(InputStream is) throws IOException
-    {
-        StringBuilder sb= new StringBuilder();
+
+    private static String getFileContent(InputStream is) throws IOException {
+        StringBuilder sb = new StringBuilder();
         try (InputStreamReader isr = new InputStreamReader(is);
-             BufferedReader br = new BufferedReader(isr);)
-        {
+                BufferedReader br = new BufferedReader(isr);) {
             String line;
             while ((line = br.readLine()) != null) {
                 sb.append(line);

@@ -226,7 +226,7 @@ public class HelloController  extends ControllerBase {
 2. app.{profile}.properties
 3. custom property configuration provider
 4. Envronment variables entries
-5.Command line Aguments -m_{propertykey}=value
+5. Command line Aguments -m_{propertykey}=value
 
 ```javascript
 public class Program {

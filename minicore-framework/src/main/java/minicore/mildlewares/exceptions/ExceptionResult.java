@@ -1,7 +1,7 @@
 package minicore.mildlewares.exceptions;
 
 public class ExceptionResult {
-   private  Error error;
+    private Error error;
 
     public ExceptionResult(Error error) {
         this.error = error;
@@ -10,8 +10,6 @@ public class ExceptionResult {
     public Error getError() {
         return error;
     }
-
-
 
     public void setError(Error error) {
         this.error = error;

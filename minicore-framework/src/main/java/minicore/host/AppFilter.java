@@ -6,10 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.*;
 import java.io.IOException;
-import java.util.stream.Collectors;
 
 public class AppFilter implements Filter {
-    public  static Logger logger= LoggerFactory.getLogger(AppFilter.class);
+    public static Logger logger = LoggerFactory.getLogger(AppFilter.class);
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -18,20 +17,18 @@ public class AppFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
+            throws IOException, ServletException {
         try {
             HttpContext httpContext = new HttpContext(servletRequest, servletResponse);
             WebHostBuilder.getAction().invoke(httpContext);
             WebHostBuilder.getServiceCollection().clearRequestObjects();
 
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
     }
 
-    private static void initialAction( HttpContext httpContext) {
-        System.out.println("inital middleware");
-    }
     @Override
     public void destroy() {
 

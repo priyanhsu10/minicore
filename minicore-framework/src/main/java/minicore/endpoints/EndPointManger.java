@@ -7,6 +7,7 @@ import minicore.contracts.annotations.http.*;
 import minicore.contracts.host.IStartup;
 import minicore.contracts.ioc.IServiceCollection;
 import minicore.ioc.container.Scope;
+import minicore.mildlewares.exceptions.RouteException;
 
 import org.reflections.Reflections;
 
@@ -45,12 +46,11 @@ public class EndPointManger {
     private void process() {
         for (Class<? extends ControllerBase> controller : controllerClasses) {
 
-            //get base path from route annotation
+            // get base path from route annotation
 
             Route r = controller.getAnnotation(Route.class);
             String BaseControllerPath = r == null ? "" : r.path();
             prepareEndPoint(controller, BaseControllerPath);
-
 
         }
 
@@ -70,7 +70,6 @@ public class EndPointManger {
 
             endPointMetadata.DisplayName = BaseControllerPath + endPointMetadata.DisplayName;
 
-
             if (endPointMetadata.DisplayName == null) {
                 continue;
             }
@@ -81,9 +80,7 @@ public class EndPointManger {
 
             patternMatch(m, endPointMetadata);
 
-
             EndPointManger.endPointMetadata.add(endPointMetadata);
-
 
         }
     }
@@ -93,11 +90,9 @@ public class EndPointManger {
             endPointMetadata.HttpMethod = HttpMethod.GET;
             endPointMetadata.DisplayName = m.getAnnotation(Get.class).path();
 
-
         } else if (m.isAnnotationPresent(Post.class)) {
             endPointMetadata.HttpMethod = HttpMethod.POST;
             endPointMetadata.DisplayName = m.getAnnotation(Post.class).path();
-
 
         } else if (m.isAnnotationPresent(Put.class)) {
             endPointMetadata.HttpMethod = HttpMethod.PUT;
@@ -107,7 +102,6 @@ public class EndPointManger {
             endPointMetadata.HttpMethod = HttpMethod.DELETE;
             endPointMetadata.DisplayName = m.getAnnotation(Delete.class).path();
 
-
         }
     }
 
@@ -115,8 +109,8 @@ public class EndPointManger {
         if (!endPointMetadata.DisplayName.contains(":")) {
             return;
         }
-        //contain the pattern
-        //example account/:name/test/:id
+        // contain the pattern
+        // example account/:name/test/:id
         endPointMetadata.isPattern = true;
         Arrays.stream(endPointMetadata.UrlTokens).filter(x -> x.contains(":")).forEach(x -> {
             String paramName = x.substring(1);
@@ -130,7 +124,6 @@ public class EndPointManger {
                 }
             }
 
-
         });
 
     }
@@ -139,8 +132,8 @@ public class EndPointManger {
         String[] segments = routPath.split("/");
         if (segments[0].length() == 0) {
 
-            //base url  localhot:8090/
-            throw new RuntimeException("no url match");
+            // base url localhot:8090/
+            throw new RouteException("Route Not foud", "404");
         }
         List<EndPointMetadata> candidates = endPointMetadata.stream()
                 .filter(x -> x.DisplayName.startsWith(segments[0]))
@@ -148,25 +141,22 @@ public class EndPointManger {
                 .filter(e -> e.UrlTokens.length == segments.length)
                 .collect(Collectors.toList());
         if (candidates.isEmpty()) {
-            throw new RuntimeException("no url match");
-
+            throw new RouteException("Route Not foud", "404");
         }
 
-        EndPointMetadata selected = candidates.stream().filter(x -> isEndpointMatch(x, routPath)).findFirst().orElseThrow(() ->
-                new RuntimeException("No route path Match"));
-
+        EndPointMetadata selected = candidates.stream().filter(x -> isEndpointMatch(x, routPath)).findFirst()
+                .orElseThrow(() -> new RouteException("Route Not foud", "404"));
 
         return selected;
 
-
     }
 
-    //this logic will be  use in route data calculation
+    // this logic will be use in route data calculation
     private boolean isEndpointMatch(EndPointMetadata endPointMetadata, String routPath) {
         String[] segments = routPath.split("/");
         String[] tokens = endPointMetadata.DisplayName.split("/");
         if (!endPointMetadata.isPattern && endPointMetadata.DisplayName.equals(routPath)) {
-            //check and match for parameters
+            // check and match for parameters
 
             return true;
 
@@ -181,7 +171,7 @@ public class EndPointManger {
                     routeParameters.add(getObject(value, parameterType));
                 } else {
                     if (!tokens[i].equals(segments[i])) {
-                        //not match
+                        // not match
                         return false;
 
                     }
@@ -208,5 +198,3 @@ public class EndPointManger {
         return parameterType.cast(value);
     }
 }
-
-
