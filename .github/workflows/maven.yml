@@ -26,16 +26,10 @@ jobs:
           java-version: "17"
           distribution: "temurin"
           cache: maven
-      - name: show dir
-        run: cd parent
-      - name: show dir
-        run: ls
-      - name: Build Parent Pom project
-        run: mvn -B package --file pom.xml
-      - name: Build Framework project
-        run: mvn -B package --file ./minicore-framework/pom.xml
-      - name: Build Client
-        run: mvn -B package --file ./client/pom.xml
+      - name: git write to run.sh
+        run: chmod +x run.sh
+      - name: run build
+        run: ./run.sh
 
       # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
       - name: Update dependency graph
