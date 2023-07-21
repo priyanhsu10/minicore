@@ -1,5 +1,5 @@
 ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
-![example branch parameter](https://github.com/priyanhsu10/minicore/actions/workflows/main.yml/badge.svg?branch=master)
+![example branch parameter](https://github.com/priyanhsu10/minicore/actions/workflows/maven.yml/badge.svg?branch=master)
 
 
 minicore parent
