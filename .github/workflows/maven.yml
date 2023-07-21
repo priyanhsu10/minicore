@@ -27,11 +27,11 @@ jobs:
           distribution: "temurin"
           cache: maven
       - name: Build Parent Pom project
-        run: mvn -B package --file parent-pam/pom.xml
+        run: mvn -B package --file ./parent-pam/pom.xml
       - name: Build Framework project
-        run: mvn -B package --file minicore-framework/pom.xml
+        run: mvn -B package --file ./minicore-framework/pom.xml
       - name: Build Client
-        run: mvn -B package --file client/pom.xml
+        run: mvn -B package --file ./client/pom.xml
 
       # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
       - name: Update dependency graph
