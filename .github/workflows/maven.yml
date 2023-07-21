@@ -28,6 +28,8 @@ jobs:
           cache: maven
       - name: show dir
         run: ls -lrt
+      - name: show client
+        run: cd client \n ls \n cat pom.xml
       - name: Build Parent Pom project
         run: mvn -B package --file ./parent-pam/pom.xml
       - name: Build Framework project
