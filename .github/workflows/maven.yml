@@ -27,7 +27,7 @@ jobs:
           distribution: "temurin"
           cache: maven
       - name: show dir
-        run: pwd
+        run: ls -lrt
       - name: Build Parent Pom project
         run: mvn -B package --file ./parent-pam/pom.xml
       - name: Build Framework project
