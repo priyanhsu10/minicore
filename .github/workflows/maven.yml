@@ -27,11 +27,11 @@ jobs:
           distribution: "temurin"
           cache: maven
       - name: show dir
-        run: ls -lrt
-      - name: show client
-        run: cd client \n ls \n cat pom.xml
+        run: cd parent
+      - name: show dir
+        run: ls
       - name: Build Parent Pom project
-        run: mvn -B package --file ./parent-pam/pom.xml
+        run: mvn -B package --file pom.xml
       - name: Build Framework project
         run: mvn -B package --file ./minicore-framework/pom.xml
       - name: Build Client
