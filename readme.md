@@ -1,3 +1,7 @@
+![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
+![example branch parameter](https://github.com/priyanhsu10/minicore/actions/workflows/maven.yml/badge.svg?branch=master)
+
+
 minicore parent
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.priyanhsu10/minicore-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.priyanhsu10/minicore-parent/)
 
