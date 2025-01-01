@@ -1,10 +1,10 @@
 package minicore.contracts.modelbinding;
 
+import jakarta.servlet.http.HttpServletRequest;
 import minicore.contracts.EndPointMetadata;
 import minicore.contracts.HttpContext;
 import minicore.contracts.HttpMethod;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;

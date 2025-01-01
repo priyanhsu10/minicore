@@ -1,12 +1,13 @@
 package minicore.contracts;
 
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import minicore.contracts.ioc.IServiceCollection;
 import minicore.contracts.results.IActionResult;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
 import java.util.HashMap;
 
 public class HttpContext {

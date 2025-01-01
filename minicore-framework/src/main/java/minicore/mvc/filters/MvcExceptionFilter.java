@@ -5,10 +5,10 @@ import minicore.contracts.filters.IExceptionFilter;
 import minicore.contracts.results.HttpStatus;
 import minicore.contracts.results.ObjectResult;
 
-public class MvcExcetionFilter implements IExceptionFilter {
+public class MvcExceptionFilter implements IExceptionFilter {
     @Override
-    public boolean support(Class<? extends RuntimeException> excetpions) {
-        return excetpions.equals(RuntimeException.class);
+    public boolean support(Class<? extends RuntimeException> exceptions) {
+        return exceptions.equals(RuntimeException.class);
     }
 
     @Override

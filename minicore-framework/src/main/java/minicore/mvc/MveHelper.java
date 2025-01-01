@@ -13,7 +13,7 @@ import minicore.contracts.mvc.IMvcHandler;
 import minicore.contracts.mvc.MvcConfigurer;
 import minicore.contracts.results.IResultExectutor;
 import minicore.contracts.results.ResultExecutor;
-import minicore.mvc.filters.MvcExcetionFilter;
+import minicore.mvc.filters.MvcExceptionFilter;
 import minicore.mvc.formatters.input.DefaultInputFormatter;
 import minicore.mvc.formatters.FormatProvider;
 import minicore.mvc.formatters.input.JsonInputFormatter;
@@ -66,7 +66,7 @@ public  class MveHelper {
             options.addResultFilter(DefaultResultFilter.class);
 
             //exception Filter
-            options.addExceptionFilter(MvcExcetionFilter.class);
+            options.addExceptionFilter(MvcExceptionFilter.class);
             //
 
 
