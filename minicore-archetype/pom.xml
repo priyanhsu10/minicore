@@ -4,7 +4,7 @@
 
   <groupId>io.github.priyanhsu10</groupId>
   <artifactId>minicore-archetype</artifactId>
-  <version>0.0.2</version>
+  <version>1.0.1</version>
   <packaging>maven-archetype</packaging>
 
   <name>minicore-archetype</name>
@@ -55,7 +55,7 @@
   </scm>
   <profiles>
     <profile>
-      <id>ossrh</id>
+      <id>central</id>
       <activation>
         <property>
           <name>!child.profile.disabled</name>
@@ -95,7 +95,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.5</version>
+            <version>3.2.7</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>
@@ -104,39 +104,21 @@
                   <goal>sign</goal>
                 </goals>
                 <inherited>false</inherited>
-
               </execution>
             </executions>
           </plugin>
           <plugin>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>1.6.7</version>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>0.6.0</version>
             <extensions>true</extensions>
-            <inherited>false</inherited>
-
             <configuration>
-              <serverId>ossrh</serverId>
-              <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-              <autoReleaseAfterClose>true</autoReleaseAfterClose>
+              <publishingServerId>central</publishingServerId>
             </configuration>
           </plugin>
         </plugins>
-
       </build>
     </profile>
-
-
-
   </profiles>
-  <distributionManagement>
-    <repository>
-      <id>ossrh</id>
-      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
+
 </project>
