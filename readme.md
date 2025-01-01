@@ -28,24 +28,24 @@ minicore-archetype for client creation
 
 ## Overview
 
-> Minicore is a JVM base cross-platform, high-performance, open-source framework for building modern, cloud-enabled, Internet-connected apps.
+> Minicore is a JVM-based cross-platform, high-performance, open-source framework for building modern, cloud-enabled, Internet-connected apps.
 
-> It is heavily in inspired by the Aspnet Core and Express. Curently Minicore framework is in the development phase ,Basic work flow is ready for creating api :)
+> It is heavily inspired by the Aspnet Core and Express. Currently Minicore framework is in the development phase, Basic The flow is ready for creating API :)
 
 #### Currently implemented Features
 
-- Pipeline Creation for for request
+- Pipeline Creation for request
 - Routing
-- Global exception hanlding
+- Global exception handling
 - Filters
     - Global level Filter configuration
-    - Controller level Filter configuration
+    - Controller-level Filter configuration
     - Action level Filter configuration
 - Content negociation using Formatters
     - Input Formatters
     - Output Formatters
 
-> Currently I am looking for contributors for the project and need your help to make this project successfull
+> Currently I am looking for contributors for the project and need your help to make this project successful
 
 > You can find the Github Project Requirement gathering board Link [here](https://github.com/users/priyanhsu10/projects/2)
 
@@ -53,8 +53,8 @@ minicore-archetype for client creation
 
 ## Minicore Architecture flow
 
-> comminig soon ..
-> ![The San Juan Mountains are beautiful!](/assets/Arcflow.png "Archeture diamgram")
+> coming soon ..
+> ![The San Juan Mountains are beautiful!](/assets/Arcflow.png "Architecture diagram")
 
 ### Program Class
 
@@ -62,31 +62,31 @@ minicore-archetype for client creation
 ```javascript
 public class Program {
     public static void main(String[] args) {
-       WebHostBuilder.build(args)
+ WebHostBuilder.build(args)
                //configure custom properties
-               .ConfigureHost(option->{
+ .ConfigureHost(option->{
                 //add your custom property file
 
 //                       option.addPropertyFile("CustomFile.properties");
 
 //------------------------*-Need to be implemented-----*--------------
-                           //add your custom json file 
+                           //add your custom JSON file 
 //                       option.addJsonFile("CustomjsonFile.json");
                         
-                        //add your custom xml file
+                        //add your custom XML file
 //                       option.addXmlFile("CustomxmlFile.xml");
 //------------------------*-Need to be implemented------*-------------
-               })
+ })
 
-               .useStartup(AppStartup.class)
+ .useStartup(AppStartup.class)
 
-               .run();
-    }
+ .run();
+ }
 }
 ```
 
 
-> comminig soon ..
+> coming soon ..
 
 ### AppStartup Class
 
@@ -95,78 +95,78 @@ public class AppStartup implements IStartup {
 
     //Register your service with IOC Container
    
-    @Override
+ @Override
     public void configureServices(IServiceCollection service) {
        
-        //configuring mvc options
-        MvcConfigurer.configureMvc(service,options->{
+        //configuring MVC options
+ MvcConfigurer.configureMvc(service,options->{
 
             // Adding your custom  Global  filters
-            options.addGlobalFilter(TestGlobalActionFilter.class);
+ options.addGlobalFilter(TestGlobalActionFilter.class);
 
             //Adding your Custom Exception Filters
-            options.addExceptionFilter(TestExceptionFilter.class);
+ options.addExceptionFilter(TestExceptionFilter.class);
           
             // Adding your custom Global Result filters
             // Global filter will execute for every action before writing the response
-            options.addResultFilter(TestResultFilter.class);
+ options.addResultFilter(TestResultFilter.class);
 
-        });
+ });
         
-        //Resigter your dependencies with the IOC Container like below
-        service.addSingleton(ITestService.class, TestService.class);
+        //Register your dependencies with the IOC Container like the below
+ service.addSingleton(ITestService.class, TestService.class);
 
 
-    }
+ }
 //build your pipeline
-    @Override
+ @Override
     public void configure(IApplicationBuilder app) {
         
-        app.use(TransactionIdMiddleware.class);-->//Custom Middleware added in the pipeline 
+ app.use(TransactionIdMiddleware.class);-->//Custom Middleware added in the pipeline 
        
        //route endPoint selector
-        app.useRouting(); 
+ app.useRouting(); 
        
         //add custom middlewares
-        app.use(CustomMiddleware.class);
+ app.use(CustomMiddleware.class);
 
-        ...  --> Other custom midlewares
+        ...  --> Other custom middlewares
        
-        app.useEndpoints();//Endpoint executor
-    }
+ app.useEndpoints();//Endpoint executor
+ }
 
 }
 ```
-> comminig soon ..
+> coming soon ..
 
 ### Setting up Pipeline
 
 
 
-> In startup class pipeline can be cofnigre in configure method ..
+> In the startup class, the pipeline can be configured in the configure method.
 ```javascript
 public class AppStartup implements IStartup {
 
    ...
 //build your pipeline
-    @Override
+ @Override
     public void configure(IApplicationBuilder app) {
 
 
       //create your own pipeline :D
-        app.use(TransactionIdMiddleware.class);
+ app.use(TransactionIdMiddleware.class);
       
-        app.useRouting(); //route EndPoint selector
+ app.useRouting(); //route EndPoint selector
       
 
         //add custom middlewares
-        app.use(CustomMiddleware.class);
+ app.use(CustomMiddleware.class);
 
-         ...  --> Other custom midlewares
+         ...  --> Other custom middleware
 
 
-        app.useEndpoints();//Endpoint executor (This should be the last midleware in the pipeline because after this next middleware wont call)
-    }
+ App.useEndpoints();//Endpoint executor (This should be the last middleware in the pipeline because after this next middleware won't call)
+ }
 
 }
 
@@ -178,52 +178,52 @@ public class AppStartup implements IStartup {
 ```javascript
 
 @Route(path = "/hello") --> @Route Annoation setut the base route for Controller
-@ActionFilter(filterClass = TestActionFilter2.class) ---> Controller Level Action filter . this is exectuted On every action execution in the controller
+@ActionFilter(filterClass = TestActionFilter2.class) ---> Controller Level Action filter . this is executed On every action execution in the controller
 public class HelloController  extends ControllerBase {
     private ITestService testService;
 
     public HelloController(ITestService testService) { ---> Inject Dependency using Contructor Injection 
         this.testService = testService;
-    }
+ }
 
-    @Get       //-->  Using @Get attribute can specify Get Method 
-    @ActionFilter(filterClass = TestActionFilter.class) --> //apply custom filter for specific action
-    @ResultFilter(filterClass = CustomResultFilter.class)  --> //custom Result Filter Which Before Result Execution. at this poit you can change the respose.
+ @Get       //-->  Using @Get attribute can specify Get Method 
+ @ActionFilter(filterClass = TestActionFilter.class) --> //apply custom filter for specific action
+ @ResultFilter(filterClass = CustomResultFilter.class)  --> //custom Result Filter Which Before Result Execution. at this point, you can change the response.
 
     public List<Model> get() {
-        //accesing transaiton id which is added by transactionIdMiddlware
-        System.out.println(httpContext.getData().get("trazId"));
+        //accesing transaction id which is added by transactionIdMiddlware
+ System.out.println(httpContext.getData().get("trazId"));
         return this.testService.getlist();
 
-    }
+ }
 
-    @Get(path = "/:id")   --> //we can specify route templete like this  eg "<route>/:{parameter from route}" this case route will be hello/:id
+ @Get(path = "/:id")   --> //we can specify route templete like this  eg "<route>/:{parameter from route}" this case route will be hello/:id
     public Model get(int id) {
         return this.testService.getById(id);
-    }
+ }
 
-    @Get(path = "/filter") //value bind from query
+ @Get(path = "/filter") //value bind from query
     public List<Model> get(@FromQuery String name) {
         return this.testService.getlist().stream().filter(x->x.getName().equals(name)).collect(Collectors.toList());
-    }
-    @Post
+ }
+ @Post
     //Direct Model binding use @FromBody annotation
     public Model post(@FromBody Model model){
         return testService.create(model);
-    }
-    @Post(path = "/m2")
+ }
+ @Post(path = "/m2")
     //Custom ModelBiding
     public Model post( Model2 model){
         return model.getModel();
-    }
-    @Put(path = "/update")
+ }
+ @Put(path = "/update")
     public String put(String name){
         return "this is post "+name;
-    }
-    @Delete(path = "/delete")
+ }
+ @Delete(path = "/delete")
     public String delete(String name){
         return "this is post "+name;
-    }
+ }
 
 }
 ```
@@ -247,66 +247,66 @@ public class HelloController  extends ControllerBase {
 
 ### Application configuration
 
-> Minicore can pick the configuration in following order
+> Minicore can pick the configuration in the following order
 1. app.properties
 2. app.{profile}.properties
 3. custom property configuration provider
-4. Envronment variables entries
-   5.Command line Aguments -m_{propertykey}=value
+4. Environment variables entries
+5. Command line Arguments -m_{propertykey}=value
 
 ```javascript
 public class Program {
     public static void main(String[] args) {
-       WebHostBuilder.build(args)
+ WebHostBuilder.build(args)
                //configure custom properties
-               .ConfigureHost(option->{
+ .ConfigureHost(option->{
                 //add your custom property file
 
 //                       option.addPropertyFile("CustomFile.properties");
-                           //add your custom json file
+                           //add your custom JSON file
 //                       option.addJsonFile("CustomjsonFile.json");
                         
-                        //add your custom xml file
+                        //add your custom XML file
 //                       option.addXmlFile("CustomxmlFile.xml");
-                        options.custom(()->{
-                                    Map<Object,Object> customProperties= new HashMap<>();
+ options.custom(()->{
+ Map<Object,Object> customProperties= new HashMap<>();
                                     //custom keys 
                                     ....
                                     return customProperties;
 
 
-                          }));
+ }));
 
-               })
+ })
 
-               .useStartup(AppStartup.class)
+ .useStartup(AppStartup.class)
 
-               .run();
-    }
+ .run();
+ }
 }
 ```
-### Depenndecy Injection
+### Dependency Injection
 
-> Micore proved the the following depencency type to be register
+> Micore proved the following dependency type to be registered using
 1. Singleton
 2. RequestScope
 3. Transient
 
-> IServiceCollection  interface is provide the functionality to resole the and register the types to IOC container ..
+> The IServiceCollection interface provides the functionality to resolve them and register the types to the IOC container.
 ```javascript
 
 public class AppStartup implements IStartup {
 
     //Register your service with IOC Container
    
-    @Override
+ @Override
     public void configureServices(IServiceCollection service) {
        
-        //Resigter your dependencies with the IOC Container like below
-        service.addSingleton(ITestService.class, TestService.class);
+        //Register your dependencies with the IOC Container like below
+ service.addSingleton(ITestService.class, TestService.class);
 
 
-    }
+ }
 
 .....
 
@@ -316,14 +316,14 @@ public class HelloController  extends ControllerBase {
 
     public HelloController(ITestService testService) { ---> Inject Dependency using Contructor Injection 
         this.testService = testService;
-    }
+ }
 
 ```
 
 ### Middleware
 
-> comminig soon ..
-![The San Juan Mountains are beautiful!](/assets/midleware.png "Archeture diamgram")
+> coming soon ..
+![The San Juan Mountains are beautiful!](/assets/midleware.png "Architecture diagram")
 
 ### Routing
 
@@ -336,44 +336,44 @@ public class HelloController  extends ControllerBase {
 
 #### Model Binding
 
-> Model binding can be perform in using following annotations
+> Model binding can be performed in using the following annotations
 
 1. @FromBody
 2. @FromForm
 3. @FromRoute
 4. @FromQuery
 
-> custom Model biding Model
+> Custom model biding Model
 
 ```javascript
 @Post(path = "/m2")
     //Custom ModelBiding
-    public Model post( Model2 model){
+ public Model post( Model2 model){
         return model.getModel();
-    }
+ }
 ....
 
 //Custom ModelBiding
 public class Model2 {
    
     //value bind from header
-    @FromHeader(Key = "Authorization")
+ @FromHeader(Key = "Authorization")
     private String token;
 
    //value bind from Query
-    @FromQurey
+ @FromQurey
     private String name;
 
     //value bind from Route
-    @FromRoute
+ @FromRoute
     private String id;
 
     //value bind from Body
-    @FromBody
+ @FromBody
     private Model model;
 
     ....
-    setter getter
+ setter getter
 
 }
 
@@ -381,28 +381,28 @@ public class Model2 {
 
 #### Route Contraints
 
-> comminig soon ..
+> coming soon ..
 
 ### Filters
 
 
-> Filters allow to run the code at veriaus stage
+> Filters allow to run the code at various stage
 
-> Minicor provide  4 types of filters
+> Minicor provides 4 types of filters
 
-1. Authorization filter [need to be impletemented]
+1. Authorization filter [need to be implemented]
 2. Action Filter
 3. Exception Filter
 4. Result Filter
 
-#### Authorization filter [need to be impletemented]
+#### Authorization filter [need to be implemented]
 
-coming soon ...
+Coming soon ...
 
 #### Action Filter
 
-Action filters allow to run the code before and after action execute
-Action filter can be define by impletementing the IAcitonFilter Interface
+Action filters allow to run the code before and after the action execute
+Action filter can be defined by implementing the IAcitonFilter Interface
 
 Execution of Pipeline can be short circuited if you set the result field
 
@@ -410,11 +410,11 @@ Execution of Pipeline can be short circuited if you set the result field
  public class TestActionFilter implements IActionFilter {
 
     //execute method before action call
-    @Override
+ @Override
     public void beforeExecute(HttpContext httpContext) {
-        //contain the action parameters that you can change
+        //contains the action parameters that you can change
         // httpContext.ActionContext.MethodParameters
-        System.out.println("TestActionFilter :beforeExecute");
+ System.out.println("TestActionFilter :beforeExecute");
 
           //for short-circuiting pipe set action result value
            //httpContext.ActionContext.ActionResult
@@ -422,25 +422,25 @@ Execution of Pipeline can be short circuited if you set the result field
 
 
 
-    }
+ }
 
-    @Override
+ @Override
     public void afterExecute(HttpContext httpContext) {
         //perform any logic after action execution
         // here Action result will be present
-        System.out.println("TestActionFilter :afterExecute");
-    }
+ System.out.println("TestActionFilter :afterExecute");
+ }
 }
 ...
 
 ```
 
-We can configure the Filter on Three level
+We can configure the Filter on Three-level.
 
 1. Global Level Action Filter
 
-Global filter will excetute against every action .
-Global filter can be register in the Startup class ConfigureServices method
+The global filter will execute against every action.
+The global filter can be registered in the Startup class ConfigureServices method.
 
 ```javascript
 
@@ -448,40 +448,40 @@ public class AppStartup implements IStartup {
 
     //Register your service with IOC Container
    
-    @Override
+ @Override
     public void configureServices(IServiceCollection service) {
        
-        //configuring mvc options
-        MvcConfigurer.configureMvc(service,options->{
+        //configuring MVC options
+ MvcConfigurer.configureMvc(service,options->{
 
             // Adding your custom  Global  filters
-            options.addGlobalFilter(TestGlobalActionFilter.class);
+ options.addGlobalFilter(TestGlobalActionFilter.class);
             .....
 
-        });
+ });
         
-        }
+ }
   ...
 
-    }
+ }
 ```
 
-2. Controller Level  Action Fitler
+2. Controller Level  Action Filter
 
-Controller level Action filter can be apply using @ActionFilter Annotation on controller class and provide the your custom filter
+Controller level Action filter can be applied using @ActionFilter Annotation on controller class and provide your custom filter
 like @ActionFilter(filterClass = TestActionFilter2.class)
 
-Filter will be excecute on every action of controller class
+The filter will be executed on every action of the controller class
 
 ```javascript
-@Route(path = "/hello") --> @Route Annoation setut the base route for Controller
+@Route(path = "/hello") --> @Route Annotation setup the base route for Controller
 @ActionFilter(filterClass = TestActionFilter2.class) ---> Controller Level Action filter . this is exectuted On every action execution in the controller
 public class HelloController  extends ControllerBase {
     private ITestService testService;
 
     public HelloController(ITestService testService) { ---> Inject Dependency using Contructor Injection 
         this.testService = testService;
-    }
+ }
 ....
 ```
 
@@ -489,104 +489,103 @@ public class HelloController  extends ControllerBase {
 
 3. Action Level Action Filter
 
-Action Level Filter can ye use same as contoller level filter . we have to apply the annotation on Action in place of Controller class
+Action Level Filter can be used the same as controller level filter. We have to apply the annotation on Action in place of the Controller class.
 
-You can apply multiple filter as well the order of execution as per you apply
+You can apply multiple filters as well as the order of execution as you apply.
 
 ```javascript
 @Get       //-->  Using @Get attribute can specify Get Method 
-    @ActionFilter(filterClass = TestActionFilter.class) --> //apply custom filter for specific action
+ @ActionFilter(filterClass = TestActionFilter.class) --> //apply custom filter for specific action
    
-    public List<Model> get() {
+ public List<Model> get() {
         //accesing transaiton id which is added by transactionIdMiddlware
-        System.out.println(httpContext.getData().get("trazId"));
+ System.out.println(httpContext.getData().get("trazId"));
         return this.testService.getlist();
 
-    }
+ }
 ```
 #### Exception Filter
 
-Exception Filter allow to handle the the custom exception which will throw from the action method
+Exception Filter allow to handle the the custom exception which will throw from the action method.
 
-We can define the our custom ExceptionFilter by implementing the IExceptionFilter interface
+We can define our custom ExceptionFilter by implementing the IExceptionFilter interface.
 
-IExceptionFilter fitler have 2 Methods
+IExceptionFilter filter has 2 Methods
 1. boolean support(..)
 
-   This method decide the elegibility of ExcptionFilter for thrown exception.
-2.  onException(..)
-    This method can give the control to you to  handle the exception
+This method decides the eligibility of ExcptionFilter for a thrown exception.
+2. onException(..)
+   This method can give the control to you to handle the exception.
 
 
  ```
  public class TestExceptionFilter implements IExceptionFilter {
-    @Override
-    public boolean support(Class<? extends RuntimeException> excetpions) {
-        //from list of exception filter support method decide for handling exception
-        return excetpions.equals(TestCustomException.class);
-    }
+ @Override
+ public boolean support(Class<? extends RuntimeException> exceptions) {
+ //from the list of exception filter support methods decide to handle the exception
+ return exceptions.equals(TestCustomException.class);
+ }
 
-    @Override
-    public <T extends RuntimeException> void onException(HttpContext context, T e) {
-        //handle your custom exception
-        context.ActionContext.ActionResult= new BadRequestResult(e.getLocalizedMessage());
-    }
+ @Override
+ public <T extends RuntimeException> void onException(HttpContext context, T e) {
+ //handle your custom exception
+ context.ActionContext.ActionResult= new BadRequestResult(e.getLocalizedMessage());
+ }
 }
  ```
 
- Exception fitler can be Configure globally in Startup Class in configureServices method .
-where we can register the Custom Exception fitler with MvcConfigurer using options.addExceptionFilter(..).
-
+> Exception filter can be configured globally in Startup Class in the configureServices method.
+Where we can register the Custom Exception filter with MvcConfigurer using options.addExceptionFilter(..).
 
 ```javascript
 public class AppStartup implements IStartup {
 
     //Register your service with IOC Container
    
-    @Override
+ @Override
     public void configureServices(IServiceCollection service) {
        
         //configuring mvc options
-        MvcConfigurer.configureMvc(service,options->{
+ MvcConfigurer.configureMvc(service,options->{
 
           
             //Adding your Custom Exception Filters
-            options.addExceptionFilter(TestExceptionFilter.class);
+ options.addExceptionFilter(TestExceptionFilter.class);
           
          
 
-        });
+ });
         
 
 
-    }
+ }
     ...
 ```
 
 #### Result Filter
 
-Result filter can be excecuted just before writing the response . at this stage you can change the result fromthe action method at all .
+The result filter can be executed just before writing the response . At this stage, you can change the result fromthe action method at all .
 
-We can define the Result filter by implemeting IResultExecutionFilter
+We can define the Result filter by implementing IResultExecutionFilter
 
 ```javascript
 public class TestResultFilter implements IResultExecutionFilter {
-    @Override
+ @Override
     public void beforeResultExecute(HttpContext httpContext) {
 
-        System.out.println("TestResultFilter:executed");
+ System.out.println("TestResultFilter:executed");
         //writing custom Header for
-        httpContext.getResponse().addHeader("Framwork-Name","Minicore");
-        httpContext.getResponse().addHeader("Developer","Priyanshu Parate");
+ httpContext.getResponse().addHeader("Framework-Name","Minicore");
+ httpContext.getResponse().addHeader("Developer","Priyanshu Parate");
 
-    }
+ }
 }
 ```
 
-We can appply the Result Filter at global level and Action Level
+We can apply the Result Filter at the global level and Action Level.
 
 1. Global level
-   Global result fitler will excecute for every action
+   The global result filter will execute for every action
    We can register the Custom Result filter with MvcConfigurer using options.addResultFilter()
 
 ```javascript
@@ -594,19 +593,19 @@ We can appply the Result Filter at global level and Action Level
 public class AppStartup implements IStartup {
 
     //Register your service with IOC Container
-    @Override
+ @Override
     public void configureServices(IServiceCollection service) {
         //configuring mvc options
-        MvcConfigurer.configureMvc(service, options -> {
+ MvcConfigurer.configureMvc(service, options -> {
            
             // Adding your custom Global Result filters
             // Global filter will execute for every action before writing the response
-            options.addResultFilter(TestResultFilter.class);
+ options.addResultFilter(TestResultFilter.class);
 
-        });
+ });
         ...
 
-    }
+ }
 
 ```
 
@@ -614,18 +613,18 @@ public class AppStartup implements IStartup {
    You can apply Result fitler for specific action using @ResultFilter
 
 ```javascript
-   @Get
-    @ActionFilter(filterClass = TestActionFilter.class)
+ @Get
+ @ActionFilter(filterClass = TestActionFilter.class)
     //apply custom filter for specific action
-    @ResultFilter(filterClass = CustomResultFilter.class)
-    public List<Model> get() {
-      Integer value=  iConfiguration.getValue(Integer.class,"age");
-        System.out.println("value from Conguraton age:"+value);
+ @ResultFilter(filterClass = CustomResultFilter.class)
+ public List<Model> get() {
+ Integer value= iConfiguration.getValue(Integer.class,"age");
+ System.out.println("value from Conguraton age:"+value);
         //accesing transaiton id which is added by transactionIdMiddlware
-        System.out.println(httpContext.getData().get("trazId"));
+ System.out.println(httpContext.getData().get("trazId"));
         return this.testService.getlist();
 
-    }
+ }
 
 ```
 
@@ -633,16 +632,16 @@ public class AppStartup implements IStartup {
 ### Formatters
 
 
-> comminig soon ..
+> coming soon ..
 
 #### Input Formatters
 
-> comminig soon ..
+> coming soon ..
 
 #### Output Formatters
 
-> comminig soon ..
+> coming soon ..
 
 ### App Startup
 
-> comminig soon ..
+> coming soon ..
