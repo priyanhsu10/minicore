@@ -7,9 +7,9 @@ import testclient.exceptions.TestCustomException;
 
 public class TestExceptionFilter implements IExceptionFilter {
     @Override
-    public boolean support(Class<? extends RuntimeException> excetpions) {
+    public boolean support(Class<? extends RuntimeException> exceptions) {
         //from list of exception filter support method decide for handling exception
-        return excetpions.equals(TestCustomException.class);
+        return exceptions.equals(TestCustomException.class);
     }
 
     @Override

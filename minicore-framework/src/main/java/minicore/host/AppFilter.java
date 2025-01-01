@@ -1,14 +1,16 @@
 package minicore.host;
 
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServlet;
 import minicore.contracts.HttpContext;
+import org.eclipse.jetty.server.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.*;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
-public class AppFilter implements Filter {
+public class AppFilter extends HttpServlet implements Filter {
     public  static Logger logger= LoggerFactory.getLogger(AppFilter.class);
 
     @Override

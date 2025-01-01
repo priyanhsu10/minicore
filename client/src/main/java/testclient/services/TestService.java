@@ -31,7 +31,7 @@ public class TestService implements ITestService {
     @Override
     public Model create(Model model) {
         if (modelList.containsKey(model.getId())) {
-            throw new TestCustomException("id :" + model.getId() + "aready existing");
+            throw new TestCustomException("id :" + model.getId() + " already existing");
         }
         modelList.put(model.getId(), model);
         return model;
