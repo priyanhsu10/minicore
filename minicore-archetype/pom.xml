@@ -4,7 +4,7 @@
 
   <groupId>io.github.priyanhsu10</groupId>
   <artifactId>minicore-archetype</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <packaging>maven-archetype</packaging>
 
   <name>minicore-archetype</name>

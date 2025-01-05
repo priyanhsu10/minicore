@@ -6,7 +6,7 @@
 
     <groupId>io.github.priyanhsu10</groupId>
     <artifactId>minicore-api</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
     <url>https://github.com/priyanhsu10/minicore</url>
@@ -36,7 +36,11 @@
         <version>1.0.3</version>
     </parent>
     <dependencies>
-
+        <dependency>
+            <groupId>com.github.lalyos</groupId>
+            <artifactId>jfiglet</artifactId>
+            <version>0.0.9</version>
+        </dependency>
     </dependencies>
     <profiles>
         <profile>

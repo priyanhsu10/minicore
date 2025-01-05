@@ -14,6 +14,7 @@ public class BadRequestResult extends ObjectResult{
 
     @Override
     public int getHttpStatus() {
-        return super.getHttpStatus();
+
+        return HttpStatus.BadRequest;
     }
 }

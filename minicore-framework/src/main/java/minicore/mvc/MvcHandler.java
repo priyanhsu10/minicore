@@ -121,15 +121,19 @@ public class MvcHandler implements IMvcHandler {
             } else {
                 return new ObjectResult(result);
             }
-        } catch (Exception e) {
+        } catch (InvocationTargetException e) {
+            if(e.getTargetException().getClass().isAssignableFrom(Exception.class)){
+                throw  new Exception( e.getTargetException());
+            }
+            RuntimeException targetException = (RuntimeException) e.getTargetException();
             logger.error(e.getMessage(),e);
-            throw e;
+            throw  targetException;
         }
     }
 
     private void executeExceptionFilters(HttpContext context, RuntimeException e) {
         boolean isHanlle = false;
-        for (int i = 0; i < exceptionFilters.size(); i++) {
+        for (int i =  exceptionFilters.size()-1;i >=0; i--) {
             if (exceptionFilters.get(i).support(e.getClass())) {
                 exceptionFilters.get(i).onException(context, e);
                 isHanlle = true;
